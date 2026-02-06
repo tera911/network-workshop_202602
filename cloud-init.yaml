@@ -1,0 +1,179 @@
+#cloud-config
+# ============================================================
+# ネットワーク勉強会用 cloud-init 設定
+# ============================================================
+#
+# 使い方:
+#   multipass launch --name workshop --memory 4G --cpus 2 --disk 20G --cloud-init cloud-init.yaml 22.04
+#
+# このcloud-initで自動インストールされるもの:
+#   - Docker
+#   - Containerlab
+#   - VyOS / Alpine コンテナイメージ
+#   - シェルヘルパー（vrouter, vhost 等のショートカット）
+#
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - curl
+  - unzip
+  - jq
+  - net-tools
+  - iputils-ping
+  - traceroute
+
+write_files:
+  # シェルヘルパーを /etc/profile.d/ に配置（全ユーザーで利用可能）
+  - path: /etc/profile.d/network-workshop.sh
+    permissions: '0644'
+    content: |
+      #!/bin/bash
+      # ============================================================
+      # ネットワーク勉強会用シェルヘルパー
+      # ============================================================
+
+      # VyOS ルーターに接続
+      vrouter() {
+          local node="$1"
+          if [ -z "$node" ]; then
+              echo "使い方: vrouter <ノード名>"
+              echo "例:     vrouter router1"
+              docker ps --format "{{.Names}}" | grep -iE "router|vyos" 2>/dev/null
+              return 1
+          fi
+          local container=$(docker ps --format "{{.Names}}" | grep -i "$node" | head -1)
+          if [ -z "$container" ]; then
+              echo "エラー: '$node' が見つかりません"
+              docker ps --format "  {{.Names}}" 2>/dev/null
+              return 1
+          fi
+          echo ">>> 接続: $container (exit で終了)"
+          sudo docker exec -it "$container" /bin/vbash
+      }
+
+      # Alpine ホストに接続
+      vhost() {
+          local node="$1"
+          if [ -z "$node" ]; then
+              echo "使い方: vhost <ノード名>"
+              echo "例:     vhost host1"
+              docker ps --format "{{.Names}}" | grep -i "host" 2>/dev/null
+              return 1
+          fi
+          local container=$(docker ps --format "{{.Names}}" | grep -i "$node" | head -1)
+          if [ -z "$container" ]; then
+              echo "エラー: '$node' が見つかりません"
+              docker ps --format "  {{.Names}}" 2>/dev/null
+              return 1
+          fi
+          echo ">>> 接続: $container (exit で終了)"
+          sudo docker exec -it "$container" /bin/sh
+      }
+
+      # 自動判定で接続
+      vconnect() {
+          local node="$1"
+          if [ -z "$node" ]; then
+              echo "使い方: vconnect <ノード名>"
+              docker ps --format "  {{.Names}}" 2>/dev/null
+              return 1
+          fi
+          local container=$(docker ps --format "{{.Names}}" | grep -i "$node" | head -1)
+          if [ -z "$container" ]; then
+              echo "エラー: '$node' が見つかりません"
+              return 1
+          fi
+          local image=$(docker inspect --format '{{.Config.Image}}' "$container")
+          local shell="/bin/sh"
+          echo "$image" | grep -qi "vyos" && shell="/bin/vbash"
+          echo ">>> 接続: $container ($shell)"
+          sudo docker exec -it "$container" "$shell"
+      }
+
+      # ラボ状態表示
+      vlab() {
+          echo "=== 起動中のコンテナ ==="
+          docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}" | grep -E "clab|NAME"
+          echo ""
+          echo "コマンド: vrouter / vhost / vdeploy / vdestroy / vping / vhelp"
+      }
+
+      # ラボ起動
+      vdeploy() {
+          local file="${1:-topology.clab.yml}"
+          [ ! -f "$file" ] && { echo "エラー: $file なし"; ls *.clab.yml 2>/dev/null; return 1; }
+          echo ">>> 起動: $file"
+          sudo containerlab deploy -t "$file"
+      }
+
+      # ラボ破棄
+      vdestroy() {
+          local file="${1:-topology.clab.yml}"
+          [ ! -f "$file" ] && { echo "エラー: $file なし"; return 1; }
+          echo ">>> 破棄: $file"
+          sudo containerlab destroy -t "$file"
+      }
+
+      # 簡易 ping
+      vping() {
+          local src="$1" dst="$2"
+          [ -z "$src" ] || [ -z "$dst" ] && { echo "使い方: vping <送信元> <宛先IP>"; return 1; }
+          local container=$(docker ps --format "{{.Names}}" | grep -i "$src" | head -1)
+          [ -z "$container" ] && { echo "エラー: '$src' が見つかりません"; return 1; }
+          echo ">>> $container -> $dst"
+          sudo docker exec "$container" ping -c 3 "$dst"
+      }
+
+      # ヘルプ
+      vhelp() {
+          cat << 'HELP'
+      === ネットワーク勉強会 コマンド一覧 ===
+
+      【接続】
+        vrouter <名前>     VyOSルーターに接続
+        vhost <名前>       Alpineホストに接続
+        vconnect <名前>    自動判定で接続
+
+      【ラボ管理】
+        vdeploy [file]     ラボ起動 (default: topology.clab.yml)
+        vdestroy [file]    ラボ破棄
+        vlab               状態表示
+
+      【その他】
+        vping <src> <ip>   ping実行
+        vhelp              このヘルプ
+
+      【例】
+        cd day1-ip-basics
+        vdeploy exercise.clab.yml
+        vrouter router1
+        vping host1 192.168.2.10
+        vdestroy exercise.clab.yml
+      HELP
+      }
+
+runcmd:
+  # Docker インストール
+  - curl -fsSL https://get.docker.com | sh
+  - usermod -aG docker ubuntu
+
+  # Containerlab インストール
+  - bash -c "$(curl -sL https://get.containerlab.dev)"
+
+  # VyOS / Alpine イメージを事前取得
+  # 注意: VyOS公式イメージが取得できない場合は、手動でビルドが必要です
+  #       詳細は docs/BUILD-VYOS.md を参照してください
+  - docker pull ghcr.io/vyos/vyos:current || echo "VyOS image not available, manual build required"
+  - docker pull alpine:latest
+
+  # 作業ディレクトリ作成
+  - mkdir -p /home/ubuntu/network-workshop
+  - chown ubuntu:ubuntu /home/ubuntu/network-workshop
+
+  # 完了フラグ
+  - echo "Setup complete! $(date)" > /home/ubuntu/setup-done.txt
+  - chown ubuntu:ubuntu /home/ubuntu/setup-done.txt
+
+final_message: "Cloud-init completed in $UPTIME seconds"

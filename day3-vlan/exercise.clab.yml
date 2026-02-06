@@ -1,0 +1,79 @@
+# Day 3: VLAN - 演習用トポロジ（穴あき版）
+#
+# 【演習】
+# 現在、すべてのホストが同じブリッジに接続されていて
+# 全員が通信できてしまいます。
+#
+# スイッチ上でブリッジを分けて、
+# VLAN 10 と VLAN 20 を分離してください。
+#
+# 構成:
+#              [switch]
+#             /  |  |  \
+#    [host1] [host2] [host3] [host4]
+#
+# 目標:
+#   VLAN 10: host1, host3 → 192.168.10.0/24
+#   VLAN 20: host2, host4 → 192.168.20.0/24
+
+name: day3-exercise
+
+topology:
+  nodes:
+    # L2 スイッチ（未設定 - すべて同じブリッジ）
+    switch:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - apk add --no-cache bridge-utils iproute2
+        # 現状: すべて同じブリッジに接続（VLAN分離なし）
+        - ip link add br0 type bridge
+        - ip link set br0 up
+        - ip link set eth1 master br0
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set eth4 master br0
+        - ip link set eth1 up
+        - ip link set eth2 up
+        - ip link set eth3 up
+        - ip link set eth4 up
+        #
+        # 【演習】上記の設定を変更して、以下のようにVLANを分離してください:
+        # - br-vlan10 ブリッジ: eth1, eth3
+        # - br-vlan20 ブリッジ: eth2, eth4
+
+    # VLAN 10 のホスト（営業部）
+    host1:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.1/24 dev eth1
+        - ip link set eth1 up
+
+    host3:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.3/24 dev eth1
+        - ip link set eth1 up
+
+    # VLAN 20 のホスト（開発部）
+    host2:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.2/24 dev eth1
+        - ip link set eth1 up
+
+    host4:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.4/24 dev eth1
+        - ip link set eth1 up
+
+  links:
+    - endpoints: ["switch:eth1", "host1:eth1"]
+    - endpoints: ["switch:eth2", "host2:eth1"]
+    - endpoints: ["switch:eth3", "host3:eth1"]
+    - endpoints: ["switch:eth4", "host4:eth1"]

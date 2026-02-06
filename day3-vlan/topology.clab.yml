@@ -1,0 +1,76 @@
+# Day 3: VLAN - 完成版トポロジ
+#
+# 構成:
+#   同じスイッチに4台のホストが接続
+#   VLAN 10: host1, host3（営業部）
+#   VLAN 20: host2, host4（開発部）
+#
+#              [switch]
+#             /  |  |  \
+#    [host1] [host2] [host3] [host4]
+#     VLAN10  VLAN20  VLAN10  VLAN20
+#
+# 同じ VLAN 同士は通信可能、異なる VLAN は通信不可
+
+name: day3-vlan
+
+topology:
+  nodes:
+    # L2 スイッチ（Linux Bridge + VLAN）
+    switch:
+      kind: linux
+      image: alpine:latest
+      exec:
+        # VLAN対応ブリッジを作成
+        - apk add --no-cache bridge-utils iproute2
+        # VLAN 10 用ブリッジ
+        - ip link add br-vlan10 type bridge
+        - ip link set br-vlan10 up
+        # VLAN 20 用ブリッジ
+        - ip link add br-vlan20 type bridge
+        - ip link set br-vlan20 up
+        # ポートをブリッジに追加
+        - ip link set eth1 master br-vlan10   # host1 (VLAN10)
+        - ip link set eth2 master br-vlan20   # host2 (VLAN20)
+        - ip link set eth3 master br-vlan10   # host3 (VLAN10)
+        - ip link set eth4 master br-vlan20   # host4 (VLAN20)
+        - ip link set eth1 up
+        - ip link set eth2 up
+        - ip link set eth3 up
+        - ip link set eth4 up
+
+    # VLAN 10 のホスト（営業部）
+    host1:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.1/24 dev eth1
+        - ip link set eth1 up
+
+    host3:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.3/24 dev eth1
+        - ip link set eth1 up
+
+    # VLAN 20 のホスト（開発部）
+    host2:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.2/24 dev eth1
+        - ip link set eth1 up
+
+    host4:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.4/24 dev eth1
+        - ip link set eth1 up
+
+  links:
+    - endpoints: ["switch:eth1", "host1:eth1"]
+    - endpoints: ["switch:eth2", "host2:eth1"]
+    - endpoints: ["switch:eth3", "host3:eth1"]
+    - endpoints: ["switch:eth4", "host4:eth1"]

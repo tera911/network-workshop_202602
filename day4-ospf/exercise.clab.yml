@@ -1,0 +1,75 @@
+# Day 4: OSPF 入門 - 演習用トポロジ（穴あき版）
+#
+# 【演習】
+# スタティックルートを使わずに、OSPF を設定して
+# 全拠点間で通信できるようにしてください。
+#
+# 構成（三角形トポロジ - 冗長経路あり）:
+#
+#         [host-hq]
+#             |
+#         [router-hq]
+#          /        \
+#         /          \
+#   [router-tokyo]---[router-osaka]
+#        |               |
+#   [host-tokyo]    [host-osaka]
+#
+# ネットワーク設計:
+#   HQ LAN:           10.0.0.0/24
+#   Tokyo LAN:        10.1.0.0/24
+#   Osaka LAN:        10.2.0.0/24
+#   HQ - Tokyo:       172.16.1.0/24
+#   HQ - Osaka:       172.16.2.0/24
+#   Tokyo - Osaka:    172.16.3.0/24（冗長リンク）
+
+name: day4-exercise
+
+topology:
+  nodes:
+    # === 本社（HQ）===
+    router-hq:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: OSPF を設定
+
+    host-hq:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.0.0.10/24 dev eth1
+        - ip route add default via 10.0.0.1
+
+    # === 東京拠点 ===
+    router-tokyo:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: OSPF を設定
+
+    host-tokyo:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.1.0.10/24 dev eth1
+        - ip route add default via 10.1.0.1
+
+    # === 大阪拠点 ===
+    router-osaka:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: OSPF を設定
+
+    host-osaka:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.2.0.10/24 dev eth1
+        - ip route add default via 10.2.0.1
+
+  links:
+    - endpoints: ["host-hq:eth1", "router-hq:eth1"]
+    - endpoints: ["router-hq:eth2", "router-tokyo:eth1"]
+    - endpoints: ["router-hq:eth3", "router-osaka:eth1"]
+    - endpoints: ["router-tokyo:eth3", "router-osaka:eth3"]
+    - endpoints: ["router-tokyo:eth2", "host-tokyo:eth1"]
+    - endpoints: ["router-osaka:eth2", "host-osaka:eth1"]
