@@ -20,7 +20,7 @@ Docker + Containerlab を使ったネットワーク勉強会のハンズオン�
 brew install multipass
 
 # VM 作成（メモリ 4GB、CPU 2コア、ディスク 20GB）
-multipass launch --name workshop --memory 4G --cpus 2 --disk 20G 22.04
+multipass launch --name workshop --disk 20G 22.04
 
 # VM にログイン
 multipass shell workshop
