@@ -38,9 +38,7 @@ ls cloud-init.yaml
 ```bash
 multipass launch \
   --name workshop \
-  --memory 4G \
-  --cpus 2 \
-  --disk 20G \
+  --disk 10G \
   --cloud-init cloud-init.yaml \
   22.04
 ```
@@ -67,103 +65,6 @@ multipass shell workshop
 ```
 
 ---
-
-## 手動セットアップ（ステップバイステップ）
-
-cloud-init を使わない場合の手順です。
-
-### Step 1: Multipass インストール
-
-```bash
-# Homebrew で Multipass をインストール
-brew install multipass
-
-# インストール確認
-multipass version
-```
-
-出力例:
-```
-multipass   1.13.0
-multipassd  1.13.0
-```
-
-### Step 2: Ubuntu VM 作成
-
-```bash
-# VM 作成（メモリ 4GB、CPU 2コア、ディスク 20GB）
-multipass launch \
-  --name workshop \
-  --memory 4G \
-  --cpus 2 \
-  --disk 20G \
-  22.04
-```
-
-作成には 2-3 分かかります。
-
-```bash
-# VM 一覧を確認
-multipass list
-```
-
-出力例:
-```
-Name                    State             IPv4             Image
-workshop                Running           192.168.64.2     Ubuntu 22.04 LTS
-```
-
-### Step 3: VM にログイン
-
-```bash
-multipass shell workshop
-```
-
-以降の手順は VM 内で実行します。
-
-### Step 4: Docker インストール
-
-```bash
-# Docker 公式インストールスクリプトを実行
-curl -fsSL https://get.docker.com | sh
-
-# 現在のユーザーを docker グループに追加
-sudo usermod -aG docker $USER
-
-# グループ変更を反映するため再ログイン
-exit
-```
-
-再度ログイン:
-```bash
-multipass shell workshop
-
-# Docker 動作確認
-docker --version
-docker run hello-world
-```
-
-### Step 5: Containerlab インストール
-
-```bash
-# Containerlab インストールスクリプトを実行
-bash -c "$(curl -sL https://get.containerlab.dev)"
-
-# 動作確認
-containerlab version
-```
-
-出力例:
-```
-                           _                   _       _
-                 _        (_)                 | |     | |
- ____ ___  ____ | |_  ____ _ ____   ____  ____| | ____| | _
-/ ___) _ \|  _ \|  _)/ _  | |  _ \ / _  )/ ___) |/ _  | || \
-( (__| |_|| | | | |_( ( | | | | | ( (/ /| |   | ( ( | | |_) )
-\____)___/|_| |_|\___)_||_|_|_| |_|\____)_|   |_|\_||_|____/
-
-    version: 0.54.2
-```
 
 ### Step 6: VyOS イメージ取得
 
