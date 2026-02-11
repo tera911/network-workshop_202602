@@ -31,17 +31,20 @@ graph TB
 
 ### IP アドレス設計
 
-| ルーター | インターフェース | IPアドレス | 接続先 |
-|----------|-----------------|-----------|--------|
+| ノード | インターフェース | IPアドレス | 接続先 |
+|--------|-----------------|-----------|--------|
+| host-hq | eth1 | 10.0.0.10/24 | HQ LAN |
 | router-hq | eth1 | 10.0.0.1/24 | HQ LAN |
 | router-hq | eth2 | 172.16.1.1/24 | Tokyo リンク |
 | router-hq | eth3 | 172.16.2.1/24 | Osaka リンク |
 | router-tokyo | eth1 | 172.16.1.2/24 | HQ リンク |
 | router-tokyo | eth2 | 10.1.0.1/24 | Tokyo LAN |
 | router-tokyo | eth3 | 172.16.3.1/24 | Osaka リンク |
+| host-tokyo | eth1 | 10.1.0.10/24 | Tokyo LAN |
 | router-osaka | eth1 | 172.16.2.2/24 | HQ リンク |
 | router-osaka | eth2 | 10.2.0.1/24 | Osaka LAN |
 | router-osaka | eth3 | 172.16.3.2/24 | Tokyo リンク |
+| host-osaka | eth1 | 10.2.0.10/24 | Osaka LAN |
 
 ---
 
@@ -162,7 +165,7 @@ C    172.16.2.0/24 is directly connected, eth3
 
 ### Step 4: 疎通確認
 
-host-hq から各拠点へ ping:
+router-hq から `exit` で抜けてから、host-hq にログインします:
 
 ```bash
 sudo docker exec -it clab-day4-ospf-host-hq /bin/sh
@@ -184,7 +187,7 @@ traceroute 10.1.0.10
 
 ### Step 5: 現在の経路を確認
 
-host-tokyo から host-osaka への経路:
+host-hq から `exit` で抜けてから、host-tokyo にログインします:
 
 ```bash
 sudo docker exec -it clab-day4-ospf-host-tokyo /bin/sh
@@ -202,7 +205,8 @@ traceroute 10.2.0.10
 
 Tokyo - Osaka 間の直接リンクを切断してみましょう。
 
-router-tokyo にログイン:
+host-tokyo から `exit` で抜けてから、router-tokyo にログインします:
+
 ```bash
 sudo docker exec -it clab-day4-ospf-router-tokyo /bin/vbash
 ```
@@ -212,11 +216,13 @@ eth3（Osaka への直接リンク）を Down:
 configure
 set interfaces ethernet eth3 disable
 commit
+exit
+exit
 ```
 
 ### Step 7: 自動迂回を確認
 
-再度 traceroute を実行:
+再度 host-tokyo から traceroute を実行します:
 
 ```bash
 sudo docker exec -it clab-day4-ospf-host-tokyo /bin/sh
@@ -235,11 +241,15 @@ traceroute 10.2.0.10
 
 ### Step 8: リンクを復旧する
 
+host-tokyo から `exit` で抜けてから、router-tokyo でリンクを復旧します:
+
 ```bash
 sudo docker exec -it clab-day4-ospf-router-tokyo /bin/vbash
 configure
 delete interfaces ethernet eth3 disable
 commit
+exit
+exit
 ```
 
 しばらく待つと、再び直接リンク経由に戻ります。

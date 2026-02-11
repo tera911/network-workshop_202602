@@ -1,6 +1,6 @@
-# 環境構築ガイド（詳細版）
+# 環境構築ガイド
 
-このガイドでは、macOS 上に Multipass を使って勉強会環境を構築する手順を説明します。
+このガイドでは、macOS 上に Multipass + cloud-init を使って勉強会環境を構築する手順を説明します。
 
 ---
 
@@ -13,9 +13,9 @@
 
 ---
 
-## クイックセットアップ（cloud-init 使用）
+## セットアップ手順
 
-時間がない場合は、cloud-init を使って一発でセットアップできます。
+cloud-init を使って必要な環境を一括でセットアップします。
 
 ### 1. Multipass インストール
 
@@ -23,17 +23,16 @@
 brew install multipass
 ```
 
-### 2. cloud-init ファイルを使用
+### 2. cloud-init ファイルを確認
 
 教材に同梱の `cloud-init.yaml` を使用します。
-（Docker, Containerlab, VyOSイメージ, シェルヘルパーが自動インストールされます）
 
 ```bash
-# 教材フォルダにある cloud-init.yaml を使用
+# 教材フォルダにある cloud-init.yaml を確認
 ls cloud-init.yaml
 ```
 
-### 3. VM 作成（cloud-init 付き）
+### 3. VM 作成
 
 ```bash
 multipass launch \
@@ -43,7 +42,7 @@ multipass launch \
   22.04
 ```
 
-自動インストールされるもの:
+cloud-init により以下が自動インストールされます:
 - Docker
 - Containerlab
 - VyOS / Alpine コンテナイメージ
@@ -64,50 +63,7 @@ multipass exec workshop -- tail -f /var/log/cloud-init-output.log
 multipass shell workshop
 ```
 
----
-
-### Step 6: VyOS イメージ取得
-
-**方法A: 講師から配布されたイメージを使う（勉強会参加者向け）**
-
-```bash
-# 配布されたファイルを読み込む
-cd ~/network-workshop-vyos
-./scripts/import-vyos-image.sh vyos-workshop.tar
-
-# または URL から直接取得
-./scripts/import-vyos-image.sh http://<講師のIP>:8000/vyos-workshop.tar
-```
-
-**方法B: 公式イメージを取得（個人学習向け）**
-
-```bash
-# VyOS コンテナイメージを取得（約 500MB）
-docker pull ghcr.io/vyos/vyos:current
-
-# Alpine イメージも取得（ホスト用、約 7MB）
-docker pull alpine:latest
-
-# イメージ確認
-docker images
-```
-
-**方法C: 公式イメージが取得できない場合 → 自分でビルド**
-
-VyOS のポリシー変更により、公式イメージが取得できない場合があります。
-
-```bash
-# ビルドスクリプトを実行（30-60分かかります）
-cd ~/network-workshop-vyos
-./scripts/build-vyos-docker.sh
-
-# ビルド後、教材のイメージ参照を切り替え
-./scripts/switch-vyos-image.sh local
-```
-
-詳細は [docs/BUILD-VYOS.md](docs/BUILD-VYOS.md) を参照してください。
-
-### Step 7: 教材を VM に転送
+### 6. 教材を VM に転送
 
 macOS 側（別のターミナル）で:
 
@@ -131,6 +87,42 @@ cd network-workshop-vyos
 # ディレクトリ確認
 ls -la
 ```
+
+---
+
+## VyOS イメージの手動取得（オプション）
+
+cloud-init で VyOS イメージが正常に取得できなかった場合は、以下の方法で手動取得してください。
+
+**方法A: 講師から配布されたイメージを使う（勉強会参加者向け）**
+
+```bash
+cd ~/network-workshop-vyos
+./scripts/import-vyos-image.sh vyos-workshop.tar
+
+# または URL から直接取得
+./scripts/import-vyos-image.sh http://<講師のIP>:8000/vyos-workshop.tar
+```
+
+**方法B: 公式イメージを取得（個人学習向け）**
+
+```bash
+docker pull ghcr.io/vyos/vyos:current
+docker pull alpine:latest
+docker images
+```
+
+**方法C: 自分でビルド**
+
+VyOS のポリシー変更により、公式イメージが取得できない場合があります。
+
+```bash
+cd ~/network-workshop-vyos
+./scripts/build-vyos-docker.sh
+./scripts/switch-vyos-image.sh local
+```
+
+詳細は [docs/BUILD-VYOS.md](docs/BUILD-VYOS.md) を参照してください。
 
 ---
 
@@ -229,7 +221,7 @@ multipass transfer workshop:/home/ubuntu/remote-file.txt ./
    brew install multipass
 
 3. 添付の cloud-init.yaml を使って VM を作成
-   multipass launch --name workshop --memory 4G --cpus 2 --disk 20G --cloud-init cloud-init.yaml 22.04
+   multipass launch --name workshop --disk 10G --cloud-init cloud-init.yaml 22.04
 
 4. セットアップ完了を待つ（5-10分）
    multipass exec workshop -- cat /home/ubuntu/setup-done.txt

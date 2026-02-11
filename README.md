@@ -13,7 +13,7 @@ Docker + Containerlab を使ったネットワーク勉強会のハンズオン�
 
 ## 環境構築
 
-環境構築の手順は **[SETUP.md](SETUP.md)** を参照してください（cloud-init による自動セットアップ / 手動ステップバイステップの2通り）。
+環境構築の手順は **[SETUP.md](SETUP.md)** を参照してください（cloud-init による自動セットアップ）。
 
 ---
 

@@ -135,7 +135,7 @@ ping 192.168.2.10 count 3
 
 host1 から host2 への経路を確認してみましょう。
 
-まず host1 にログイン:
+router1 から `exit` で抜けてから、host1 にログインします:
 ```bash
 sudo docker exec -it clab-day1-ip-basics-host1 /bin/sh
 ```

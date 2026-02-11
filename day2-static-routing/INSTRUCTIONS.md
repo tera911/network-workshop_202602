@@ -30,15 +30,18 @@ graph TB
 
 ### IP アドレス設計
 
-| ルーター | インターフェース | IPアドレス | 接続先 |
-|----------|-----------------|-----------|--------|
+| ノード | インターフェース | IPアドレス | 接続先 |
+|--------|-----------------|-----------|--------|
+| host-hq | eth1 | 10.0.0.10/24 | HQ LAN |
 | router-hq | eth1 | 10.0.0.1/24 | HQ LAN |
 | router-hq | eth2 | 172.16.1.1/24 | Tokyo リンク |
 | router-hq | eth3 | 172.16.2.1/24 | Osaka リンク |
 | router-tokyo | eth1 | 172.16.1.2/24 | HQ リンク |
 | router-tokyo | eth2 | 10.1.0.1/24 | Tokyo LAN |
+| host-tokyo | eth1 | 10.1.0.10/24 | Tokyo LAN |
 | router-osaka | eth1 | 172.16.2.2/24 | HQ リンク |
 | router-osaka | eth2 | 10.2.0.1/24 | Osaka LAN |
+| host-osaka | eth1 | 10.2.0.10/24 | Osaka LAN |
 
 ---
 
@@ -107,7 +110,7 @@ router-hq は以下を知っている必要があります:
 
 ### Step 3: 各拠点間で疎通確認
 
-host-hq から各拠点への ping:
+router-hq から `exit` で抜けてから、host-hq にログインします:
 
 ```bash
 sudo docker exec -it clab-day2-static-routing-host-hq /bin/sh
@@ -128,7 +131,7 @@ traceroute 10.1.0.10
 
 ### Step 4: 東京から大阪への通信
 
-東京から大阪への traceroute を実行してみましょう:
+host-hq から `exit` で抜けてから、host-tokyo で traceroute を実行してみましょう:
 
 ```bash
 sudo docker exec -it clab-day2-static-routing-host-tokyo /bin/sh
