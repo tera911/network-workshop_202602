@@ -10,6 +10,12 @@ Docker + Containerlab を使ったネットワーク勉強会のハンズオン�
 | 2 | スタティックルーティング | ルーティングテーブル、3拠点構成、静的経路設定 |
 | 3 | VLAN | L2セグメント分離、タグVLAN、トランク |
 | 4 | OSPF入門 | 動的ルーティング、Neighbor、Area、障害時の自動迂回 |
+| 5 | NAT | Source NAT / Masquerade、tcpdumpでアドレス変換確認 |
+| 6 | DHCP / DNS | DHCPサーバー、DNS転送、手動vs自動IP配布 |
+| 7 | ファイアウォール | パケットフィルタリング、3ゾーン構成、ステートフル検査 |
+| 8 | Inter-VLAN ルーティング | 802.1Qタグ、トランクポート、ルーター・オン・ア・スティック |
+| 9 | VPN（WireGuard） | 公開鍵認証、暗号化トンネル、拠点間接続 |
+| 10 | トラブルシューティング | tcpdump、障害切り分け、Day 1〜9の総合演習（5シナリオ） |
 
 ## 環境構築
 
@@ -71,6 +77,30 @@ set protocols ospf parameters router-id 1.1.1.1
 set interfaces ethernet eth1 vif 10 address 192.168.10.1/24
 set interfaces ethernet eth1 vif 20 address 192.168.20.1/24
 
+# NAT（Masquerade）
+set nat source rule 10 outbound-interface name eth2
+set nat source rule 10 source address 192.168.1.0/24
+set nat source rule 10 translation address masquerade
+
+# DHCP サーバー
+set service dhcp-server shared-network-name LAN subnet 192.168.1.0/24 range 0 start 192.168.1.100
+set service dhcp-server shared-network-name LAN subnet 192.168.1.0/24 range 0 stop 192.168.1.200
+
+# DNS フォワーディング
+set service dns forwarding listen-address 192.168.1.1
+set service dns forwarding allow-from 192.168.1.0/24
+
+# ファイアウォール
+set firewall ipv4 forward filter default-action drop
+set firewall ipv4 forward filter rule 10 action accept
+set firewall ipv4 forward filter rule 10 inbound-interface name eth1
+
+# WireGuard VPN
+set interfaces wireguard wg0 address 10.10.10.1/24
+set interfaces wireguard wg0 port 51820
+set interfaces wireguard wg0 private-key <秘密鍵>
+set interfaces wireguard wg0 peer <名前> public-key <公開鍵>
+
 # 設定の確認
 show                # 現在の設定を表示
 compare             # 変更差分を表示
@@ -88,6 +118,19 @@ show ip route
 # OSPF 状態
 show ip ospf neighbor
 show ip ospf database
+
+# NAT 確認
+show nat source rules
+show nat source translations
+
+# DHCP 確認
+show dhcp server leases
+
+# ファイアウォール確認
+show firewall
+
+# WireGuard 確認
+show interfaces wireguard wg0
 
 # 疎通確認
 ping 192.168.1.1
@@ -117,6 +160,12 @@ vyos@router:~$
 | Day 2（3ルーター + 3ホスト） | 3GB |
 | Day 3（1スイッチ + 4ホスト） | 2GB |
 | Day 4（3ルーター + 3ホスト） | 3GB |
+| Day 5（1ルーター + 2ホスト） | 2GB |
+| Day 6（1ルーター + 1スイッチ + 3ホスト） | 2GB |
+| Day 7（1ルーター + 3ホスト） | 2GB |
+| Day 8（1ルーター + 1スイッチ + 4ホスト） | 3GB |
+| Day 9（2ルーター + 1インターネット + 2ホスト） | 3GB |
+| Day 10（シナリオにより異なる） | 3GB |
 
 VM 全体で **4GB** あれば全 Day に対応できます。
 
