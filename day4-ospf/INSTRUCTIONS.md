@@ -12,22 +12,21 @@
 
 Day 2 の 3 拠点構成に **冗長リンク（Tokyo - Osaka）** を追加した三角形トポロジです。
 
-```
-            [host-hq]
-            10.0.0.10
-                |
-                | 10.0.0.0/24
-                |
-           [router-hq]
-           /         \
-  172.16.1.0/24   172.16.2.0/24
-        /               \
-[router-tokyo]-----[router-osaka]
-      |    172.16.3.0/24    |
-  10.1.0.0/24           10.2.0.0/24
-      |                     |
-[host-tokyo]          [host-osaka]
-  10.1.0.10             10.2.0.10
+```mermaid
+graph TB
+    host_hq("host-hq<br/>10.0.0.10")
+    router_hq["router-hq"]
+    router_tokyo["router-tokyo"]
+    router_osaka["router-osaka"]
+    host_tokyo("host-tokyo<br/>10.1.0.10")
+    host_osaka("host-osaka<br/>10.2.0.10")
+
+    host_hq ---|"10.0.0.0/24<br/>HQ LAN"| router_hq
+    router_hq ---|"172.16.1.0/24"| router_tokyo
+    router_hq ---|"172.16.2.0/24"| router_osaka
+    router_tokyo ---|"172.16.3.0/24<br/>冗長リンク"| router_osaka
+    router_tokyo ---|"10.1.0.0/24<br/>Tokyo LAN"| host_tokyo
+    router_osaka ---|"10.2.0.0/24<br/>Osaka LAN"| host_osaka
 ```
 
 ### IP アドレス設計

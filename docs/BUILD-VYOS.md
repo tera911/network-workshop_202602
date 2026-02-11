@@ -117,57 +117,11 @@ vyos-local    latest    xxxxxxxxxxxx    1 minute ago    512MB
 
 ## 簡易ビルドスクリプト
 
-上記の手順をスクリプト化したものです：
+上記の手順をスクリプト化した `scripts/build-vyos-docker.sh` を利用できます：
 
 ```bash
-#!/bin/bash
-# build-vyos-docker.sh
-# VyOS Docker イメージをビルドするスクリプト
-
-set -e
-
-echo "=== VyOS Docker イメージビルド ==="
-
-# 作業ディレクトリ
-WORK_DIR="$HOME/vyos-build"
-IMAGE_NAME="vyos-local:latest"
-
-# Step 1: リポジトリをクローン
-if [ ! -d "$WORK_DIR" ]; then
-    echo ">>> vyos-build をクローン中..."
-    git clone -b current --single-branch https://github.com/vyos/vyos-build "$WORK_DIR"
-fi
-
-cd "$WORK_DIR"
-
-# Step 2-3: ビルド実行
-echo ">>> ISO をビルド中（30-60分かかります）..."
-docker run --rm \
-  --privileged \
-  -v $(pwd):/vyos \
-  -w /vyos \
-  vyos/vyos-build:current \
-  ./build-vyos-image iso --architecture amd64
-
-# Step 4: Docker イメージ作成
-echo ">>> Docker イメージを作成中..."
-ISO_FILE=$(ls build/vyos-*.iso | head -1)
-
-mkdir -p /tmp/vyos-iso /tmp/vyos-rootfs
-sudo mount -o loop "$ISO_FILE" /tmp/vyos-iso
-sudo unsquashfs -d /tmp/vyos-rootfs /tmp/vyos-iso/live/filesystem.squashfs
-sudo tar -C /tmp/vyos-rootfs -c . | docker import - "$IMAGE_NAME"
-
-# クリーンアップ
-sudo umount /tmp/vyos-iso
-sudo rm -rf /tmp/vyos-iso /tmp/vyos-rootfs
-
-echo ""
-echo "=== ビルド完了 ==="
-echo "イメージ名: $IMAGE_NAME"
-echo ""
-echo "Containerlab で使用するには、topology.clab.yml の image を変更してください:"
-echo "  image: vyos-local:latest"
+cd ~/network-workshop-vyos
+./scripts/build-vyos-docker.sh
 ```
 
 ---
@@ -263,57 +217,9 @@ rm -rf build/
 
 ---
 
----
-
 ## 講師向け: イメージの配布準備
 
-ビルドしたイメージを参加者に配布する手順です。
-
-### イメージをファイルにエクスポート
-
-```bash
-# tar ファイルとして保存（約 500MB）
-docker save vyos-local:latest -o vyos-workshop.tar
-
-# 圧縮する場合（約 200MB）
-docker save vyos-local:latest | gzip > vyos-workshop.tar.gz
-```
-
-### 配布方法
-
-| 方法 | 適した状況 |
-|------|-----------|
-| **USB メモリ** | 会場でネット接続が不安定な場合 |
-| **ファイル共有** | Google Drive, Dropbox 等で事前配布 |
-| **ローカルサーバー** | 会場に簡易HTTPサーバーを立てる |
-
-### ローカルHTTPサーバーで配布（会場向け）
-
-```bash
-# Python の簡易サーバーで配布
-cd /path/to/files
-python3 -m http.server 8000
-
-# 参加者は以下でダウンロード
-# curl -O http://<講師のIP>:8000/vyos-workshop.tar
-```
-
-### 参加者への案内文
-
-```
-【VyOS イメージの取得】
-
-以下のコマンドでイメージを取得してください：
-
-# ダウンロード
-curl -O http://192.168.1.100:8000/vyos-workshop.tar
-
-# 読み込み
-docker load -i vyos-workshop.tar
-
-# 確認
-docker images | grep vyos
-```
+ビルドしたイメージの配布手順については **[FACILITATOR-GUIDE.md](FACILITATOR-GUIDE.md)** を参照してください。
 
 ---
 

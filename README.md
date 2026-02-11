@@ -11,60 +11,9 @@ Docker + Containerlab を使ったネットワーク勉強会のハンズオン�
 | 3 | VLAN | L2セグメント分離、タグVLAN、トランク |
 | 4 | OSPF入門 | 動的ルーティング、Neighbor、Area、障害時の自動迂回 |
 
-## 環境構築（macOS）
+## 環境構築
 
-### 1. Multipass で Ubuntu VM を作成
-
-```bash
-# Multipass インストール
-brew install multipass
-
-# VM 作成（メモリ 4GB、CPU 2コア、ディスク 20GB）
-multipass launch --name workshop --memory 4G --cpus 2 --disk 20G 22.04
-
-# VM にログイン
-multipass shell workshop
-```
-
-### 2. Docker インストール
-
-```bash
-curl -fsSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
-exit  # 再ログインして docker グループを反映
-```
-
-再度ログイン後:
-```bash
-multipass shell workshop
-docker --version  # 動作確認
-```
-
-### 3. Containerlab インストール
-
-```bash
-bash -c "$(curl -sL https://get.containerlab.dev)"
-containerlab version  # 動作確認
-```
-
-### 4. VyOS イメージ取得
-
-```bash
-docker pull ghcr.io/vyos/vyos:current
-```
-
-### 5. 教材を VM に転送
-
-ホスト側（macOS）で:
-```bash
-multipass transfer network-workshop-vyos.zip workshop:/home/ubuntu/
-```
-
-VM 側で:
-```bash
-unzip network-workshop-vyos.zip
-cd network-workshop-vyos
-```
+環境構築の手順は **[SETUP.md](SETUP.md)** を参照してください（cloud-init による自動セットアップ / 手動ステップバイステップの2通り）。
 
 ---
 
@@ -175,45 +124,7 @@ VM 全体で **4GB** あれば全 Day に対応できます。
 
 ## トラブルシューティング
 
-### Containerlab が起動しない
-
-```bash
-# Docker が動いているか確認
-sudo systemctl status docker
-
-# 動いていなければ起動
-sudo systemctl start docker
-```
-
-### VyOS にログインできない
-
-```bash
-# コンテナの状態確認
-sudo docker ps -a
-
-# ログ確認
-sudo docker logs <container-name>
-```
-
-### 設定が反映されない
-
-```bash
-# 設定モードで commit を忘れていないか確認
-configure
-compare    # 未コミットの変更があれば表示される
-commit     # 変更を反映
-```
-
-### ping が通らない
-
-1. インターフェースに IP アドレスが設定されているか確認
-2. ルーティングテーブルに経路があるか確認
-3. 対向のインターフェースが up しているか確認
-
-```bash
-show interfaces
-show ip route
-```
+問題が発生した場合は **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** を参照してください。
 
 ---
 
@@ -258,9 +169,12 @@ vping host1 192.168.2.10 # host1 から ping
 
 | ファイル | 内容 |
 |----------|------|
-| [README.md](README.md) | このファイル（概要） |
-| [SETUP.md](SETUP.md) | 詳細な環境構築ガイド |
-| [docs/ABOUT-VYOS.md](docs/ABOUT-VYOS.md) | VyOS とは何か |
+| [README.md](README.md) | このファイル（概要・CLIリファレンス） |
+| [SETUP.md](SETUP.md) | 環境構築ガイド（詳細版） |
+| [docs/ABOUT-VYOS.md](docs/ABOUT-VYOS.md) | VyOS の背景と選定理由 |
+| [docs/BUILD-VYOS.md](docs/BUILD-VYOS.md) | VyOS Docker イメージのビルド手順 |
+| [docs/FACILITATOR-GUIDE.md](docs/FACILITATOR-GUIDE.md) | 講師向けガイド（進行・準備） |
+| [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | トラブルシューティング集 |
 
 ---
 

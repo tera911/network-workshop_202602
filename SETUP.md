@@ -301,56 +301,7 @@ multipass transfer workshop:/home/ubuntu/remote-file.txt ./
 
 ## トラブルシューティング
 
-### Multipass が起動しない（macOS）
-
-```bash
-# Multipass デーモンを再起動
-sudo launchctl stop com.canonical.multipassd
-sudo launchctl start com.canonical.multipassd
-```
-
-### VM のメモリが足りない
-
-```bash
-# VM を停止してからメモリを増やす
-multipass stop workshop
-multipass set local.workshop.memory=6G
-multipass start workshop
-```
-
-### Docker のパーミッションエラー
-
-```bash
-# docker グループに追加されているか確認
-groups
-
-# docker が含まれていなければ再追加
-sudo usermod -aG docker $USER
-
-# 再ログイン
-exit
-multipass shell workshop
-```
-
-### VyOS イメージが見つからない
-
-```bash
-# イメージを再取得
-docker pull ghcr.io/vyos/vyos:current
-
-# それでもダメなら古いイメージを試す
-docker pull ghcr.io/vyos/vyos:1.4-rolling-202401010000
-```
-
-### Containerlab でエラーが出る
-
-```bash
-# 古いラボが残っている可能性
-sudo containerlab destroy --all
-
-# Docker をリセット
-docker system prune -f
-```
+問題が発生した場合は **[docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)** を参照してください。
 
 ---
 

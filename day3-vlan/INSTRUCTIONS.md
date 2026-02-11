@@ -12,12 +12,24 @@
 
 4台のホストが1台のスイッチに接続された構成です。
 
-```
-              [switch]
-             /  |  |  \
-    [host1] [host2] [host3] [host4]
-     VLAN10  VLAN20  VLAN10  VLAN20
-    営業部   開発部   営業部   開発部
+```mermaid
+graph TB
+    switch["switch"]
+
+    subgraph vlan10["VLAN 10 — 営業部 (192.168.10.0/24)"]
+        host1("host1<br/>192.168.10.1")
+        host3("host3<br/>192.168.10.3")
+    end
+
+    subgraph vlan20["VLAN 20 — 開発部 (192.168.20.0/24)"]
+        host2("host2<br/>192.168.20.2")
+        host4("host4<br/>192.168.20.4")
+    end
+
+    switch --- host1
+    switch --- host2
+    switch --- host3
+    switch --- host4
 ```
 
 ### VLAN 設計
@@ -43,24 +55,40 @@
 
 ### VLAN がない場合
 
+```mermaid
+graph LR
+    sw["スイッチ"]
+    A("PC-A") --- sw
+    B("PC-B") --- sw
+    C("PC-C") --- sw
+    D("PC-D") --- sw
 ```
-[PC-A]---[スイッチ]---[PC-B]
-    \              /
-     [PC-C]---[PC-D]
 
-→ 全員が同じネットワーク、全員が通信可能
-```
+> 全員が同じネットワーク、全員が通信可能
 
 ### VLAN がある場合
 
-```
-[PC-A]---[スイッチ]---[PC-B]    ← VLAN 10（営業部）
-    \              /
-     [PC-C]---[PC-D]            ← VLAN 20（開発部）
+```mermaid
+graph LR
+    sw["スイッチ"]
 
-→ VLAN 10 と VLAN 20 は互いに通信不可
-  （ルーターがないと通信できない）
+    subgraph vlan10["VLAN 10（営業部）"]
+        A("PC-A")
+        B("PC-B")
+    end
+
+    subgraph vlan20["VLAN 20（開発部）"]
+        C("PC-C")
+        D("PC-D")
+    end
+
+    A --- sw
+    B --- sw
+    C --- sw
+    D --- sw
 ```
+
+> VLAN 10 と VLAN 20 は互いに通信不可（ルーターがないと通信できない）
 
 ---
 
