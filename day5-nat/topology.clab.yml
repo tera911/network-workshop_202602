@@ -1,0 +1,41 @@
+# Day 5: NAT（ネットワークアドレス変換）- 完成版トポロジ
+#
+# 構成:
+#   host-internal --- router-gw(NAT) --- server-external
+#
+# ネットワーク設計:
+#   内部: 192.168.1.0/24
+#   外部: 203.0.113.0/24
+#
+# 使い方:
+#   1. sudo containerlab deploy -t topology.clab.yml
+#   2. ./setup-complete.sh  # 設定投入スクリプト実行
+
+name: day5-nat
+
+topology:
+  nodes:
+    # NAT ルーター（VyOS）
+    router-gw:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    # 内部ホスト
+    host-internal:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.1.10/24 dev eth1
+        - ip route add default via 192.168.1.1
+
+    # 外部サーバー
+    server-external:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 203.0.113.10/24 dev eth1
+        - ip route add default via 203.0.113.1
+
+  links:
+    - endpoints: ["host-internal:eth1", "router-gw:eth1"]
+    - endpoints: ["router-gw:eth2", "server-external:eth1"]

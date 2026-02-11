@@ -1,0 +1,43 @@
+# Day 10: シナリオ 2 - ルーティング不足
+#
+# 症状: host1 から host2 へ ping が通らない
+#        しかし router1 から host2 への ping は通る
+# 原因: ???（自分で調査してください）
+#
+# 構成:
+#   host1 --- router1 --- router2 --- host2
+#
+# 使い方:
+#   1. sudo containerlab deploy -t scenario2.clab.yml
+#   2. ./setup-scenario2.sh  # 設定投入
+
+name: scenario2
+
+topology:
+  nodes:
+    router1:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    router2:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    host1:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.1.10/24 dev eth1
+        - ip route add default via 192.168.1.1
+
+    host2:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.2.10/24 dev eth1
+        - ip route add default via 192.168.2.1
+
+  links:
+    - endpoints: ["host1:eth1", "router1:eth1"]
+    - endpoints: ["router1:eth2", "router2:eth1"]
+    - endpoints: ["router2:eth2", "host2:eth1"]

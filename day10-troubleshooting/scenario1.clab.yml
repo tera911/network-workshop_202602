@@ -1,0 +1,38 @@
+# Day 10: シナリオ 1 - IP 設定ミス
+#
+# 症状: host1 から host2 へ ping が通らない
+# 原因: ???（自分で調査してください）
+#
+# 構成:
+#   host1 --- router --- host2
+#
+# 使い方:
+#   1. sudo containerlab deploy -t scenario1.clab.yml
+#   2. ./setup-scenario1.sh  # 設定投入
+
+name: scenario1
+
+topology:
+  nodes:
+    router:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    host1:
+      kind: linux
+      image: alpine:latest
+      exec:
+        # host1 の IP 設定（何か問題がある...）
+        - ip addr add 192.168.10.10/24 dev eth1
+        - ip route add default via 192.168.10.1
+
+    host2:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.2.10/24 dev eth1
+        - ip route add default via 192.168.2.1
+
+  links:
+    - endpoints: ["host1:eth1", "router:eth1"]
+    - endpoints: ["router:eth2", "host2:eth1"]

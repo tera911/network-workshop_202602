@@ -1,0 +1,62 @@
+# Day 10: シナリオ 5 - OSPF 設定ミス
+#
+# 症状: host-hq から host-tokyo へ ping が通らない
+#        OSPF Neighbor が正しく確立しない
+# 原因: ???（自分で調査してください）
+#
+# 構成:
+#         [host-hq]
+#             |
+#         [router-hq]
+#          /        \
+#   [router-tokyo]  [router-osaka]
+#        |               |
+#   [host-tokyo]    [host-osaka]
+#
+# 使い方:
+#   1. sudo containerlab deploy -t scenario5.clab.yml
+#   2. ./setup-scenario5.sh  # 設定投入
+
+name: scenario5
+
+topology:
+  nodes:
+    router-hq:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    router-tokyo:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    router-osaka:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    host-hq:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.0.0.10/24 dev eth1
+        - ip route add default via 10.0.0.1
+
+    host-tokyo:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.1.0.10/24 dev eth1
+        - ip route add default via 10.1.0.1
+
+    host-osaka:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.2.0.10/24 dev eth1
+        - ip route add default via 10.2.0.1
+
+  links:
+    - endpoints: ["host-hq:eth1", "router-hq:eth1"]
+    - endpoints: ["router-hq:eth2", "router-tokyo:eth1"]
+    - endpoints: ["router-hq:eth3", "router-osaka:eth1"]
+    - endpoints: ["router-tokyo:eth2", "host-tokyo:eth1"]
+    - endpoints: ["router-osaka:eth2", "host-osaka:eth1"]

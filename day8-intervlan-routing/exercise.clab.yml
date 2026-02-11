@@ -1,0 +1,92 @@
+# Day 8: Inter-VLAN ルーティング - 演習用トポロジ（穴あき版）
+#
+# 【演習】
+# 1. スイッチで VLAN 10/20 を分離する（Day 3 の復習）
+# 2. トランクポートを設定する
+# 3. VyOS でサブインターフェースを設定して VLAN 間通信を実現する
+#
+# 構成:
+#              [router-gw]
+#                  │
+#              [switch] (すべて同じブリッジ)
+#             /  |  |  \
+#    [host1] [host2] [host3] [host4]
+#
+# 目標:
+#   VLAN 10: host1, host3 → 192.168.10.0/24
+#   VLAN 20: host2, host4 → 192.168.20.0/24
+#   ルーター経由で VLAN 間通信可能にする
+
+name: day8-exercise
+
+topology:
+  nodes:
+    # ルーター（未設定）
+    router-gw:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: サブインターフェースを設定してください
+
+    # L2 スイッチ（すべて同じブリッジ - 分離が必要）
+    switch:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - apk add --no-cache bridge-utils iproute2
+        # 現状: すべて同じブリッジに接続（VLAN 分離なし）
+        - ip link add br0 type bridge
+        - ip link set br0 up
+        - ip link set eth1 master br0
+        - ip link set eth2 master br0
+        - ip link set eth3 master br0
+        - ip link set eth4 master br0
+        - ip link set eth1 up
+        - ip link set eth2 up
+        - ip link set eth3 up
+        - ip link set eth4 up
+        - ip link set eth5 up
+        #
+        # 【演習】
+        # 1. br0 からポートを外して、br-vlan10 / br-vlan20 に分離
+        # 2. eth5 にトランク（eth5.10, eth5.20）を設定
+
+    # VLAN 10 のホスト（営業部）
+    host1:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.11/24 dev eth1
+        - ip route add default via 192.168.10.1
+        - ip link set eth1 up
+
+    host3:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.10.13/24 dev eth1
+        - ip route add default via 192.168.10.1
+        - ip link set eth1 up
+
+    # VLAN 20 のホスト（開発部）
+    host2:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.12/24 dev eth1
+        - ip route add default via 192.168.20.1
+        - ip link set eth1 up
+
+    host4:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.20.14/24 dev eth1
+        - ip route add default via 192.168.20.1
+        - ip link set eth1 up
+
+  links:
+    - endpoints: ["switch:eth1", "host1:eth1"]
+    - endpoints: ["switch:eth2", "host2:eth1"]
+    - endpoints: ["switch:eth3", "host3:eth1"]
+    - endpoints: ["switch:eth4", "host4:eth1"]
+    - endpoints: ["switch:eth5", "router-gw:eth1"]

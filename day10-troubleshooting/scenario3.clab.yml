@@ -1,0 +1,37 @@
+# Day 10: シナリオ 3 - NAT 設定漏れ
+#
+# 症状: host-internal から server-external へ ping が通らない
+# 原因: ???（自分で調査してください）
+#
+# 構成:
+#   host-internal --- router-gw(NAT) --- server-external
+#
+# 使い方:
+#   1. sudo containerlab deploy -t scenario3.clab.yml
+#   2. ./setup-scenario3.sh  # 設定投入
+
+name: scenario3
+
+topology:
+  nodes:
+    router-gw:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    host-internal:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.1.10/24 dev eth1
+        - ip route add default via 192.168.1.1
+
+    server-external:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 203.0.113.10/24 dev eth1
+        - ip route add default via 203.0.113.1
+
+  links:
+    - endpoints: ["host-internal:eth1", "router-gw:eth1"]
+    - endpoints: ["router-gw:eth2", "server-external:eth1"]

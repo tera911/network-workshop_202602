@@ -1,0 +1,58 @@
+# Day 7: ファイアウォール - 演習用トポロジ（穴あき版）
+#
+# 【演習】
+# router-fw にファイアウォールルールを設定して、
+# 以下のポリシーを実現してください:
+#   - 内部 → 外部: 許可
+#   - 内部 → DMZ: 許可
+#   - 外部 → DMZ: HTTP（TCP 80）のみ許可
+#   - 外部 → 内部: 拒否
+#
+# 構成（3ゾーン）:
+#   host-internal ── router-fw ── host-external
+#                       │
+#                    host-dmz
+#
+# ネットワーク設計:
+#   内部ゾーン: 192.168.1.0/24
+#   DMZ ゾーン: 172.16.0.0/24
+#   外部ゾーン: 203.0.113.0/24
+
+name: day7-exercise
+
+topology:
+  nodes:
+    # ファイアウォールルーター（未設定）
+    router-fw:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: IP アドレスとファイアウォールルールを設定してください
+
+    # 内部ゾーン（設定済み）
+    host-internal:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.1.10/24 dev eth1
+        - ip route add default via 192.168.1.1
+
+    # DMZ ゾーン（設定済み）
+    host-dmz:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 172.16.0.10/24 dev eth1
+        - ip route add default via 172.16.0.1
+
+    # 外部ゾーン（設定済み）
+    host-external:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 203.0.113.10/24 dev eth1
+        - ip route add default via 203.0.113.1
+
+  links:
+    - endpoints: ["host-internal:eth1", "router-fw:eth1"]
+    - endpoints: ["host-dmz:eth1", "router-fw:eth2"]
+    - endpoints: ["host-external:eth1", "router-fw:eth3"]

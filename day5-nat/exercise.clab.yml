@@ -1,0 +1,42 @@
+# Day 5: NAT - 演習用トポロジ（穴あき版）
+#
+# 【演習】
+# router-gw に IP アドレスと NAT（Masquerade）を設定して、
+# host-internal から server-external へ通信できるようにしてください。
+#
+# 構成:
+#   host-internal --- router-gw(NAT未設定) --- server-external
+#
+# ネットワーク設計:
+#   内部: 192.168.1.0/24
+#   外部: 203.0.113.0/24
+
+name: day5-exercise
+
+topology:
+  nodes:
+    # NAT ルーター（未設定）
+    router-gw:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: IP アドレスと NAT を設定してください
+
+    # 内部ホスト（設定済み）
+    host-internal:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 192.168.1.10/24 dev eth1
+        - ip route add default via 192.168.1.1
+
+    # 外部サーバー（設定済み）
+    server-external:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 203.0.113.10/24 dev eth1
+        - ip route add default via 203.0.113.1
+
+  links:
+    - endpoints: ["host-internal:eth1", "router-gw:eth1"]
+    - endpoints: ["router-gw:eth2", "server-external:eth1"]

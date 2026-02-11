@@ -1,0 +1,63 @@
+# Day 9: VPN（WireGuard）- 完成版トポロジ
+#
+# 構成:
+#   host-site-a ── router-site-a ══(WireGuard)══ router-site-b ── host-site-b
+#                        └── router-internet ──┘
+#
+# ネットワーク設計:
+#   Site A LAN:       10.1.0.0/24
+#   Site A WAN:       203.0.113.0/24
+#   Site B WAN:       198.51.100.0/24
+#   Site B LAN:       10.2.0.0/24
+#   WireGuard:        10.10.10.0/24
+#
+# 使い方:
+#   1. sudo containerlab deploy -t topology.clab.yml
+#   2. ./setup-complete.sh  # 鍵生成 + 設定投入
+
+name: day9-vpn
+
+topology:
+  nodes:
+    # === Site A ===
+    router-site-a:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    host-site-a:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.1.0.10/24 dev eth1
+        - ip route add default via 10.1.0.1
+
+    # === インターネット（模擬）===
+    router-internet:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 203.0.113.254/24 dev eth1
+        - ip addr add 198.51.100.254/24 dev eth2
+        - echo 1 > /proc/sys/net/ipv4/ip_forward
+
+    # === Site B ===
+    router-site-b:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+
+    host-site-b:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.2.0.10/24 dev eth1
+        - ip route add default via 10.2.0.1
+
+  links:
+    # Site A 内部
+    - endpoints: ["host-site-a:eth1", "router-site-a:eth1"]
+    # Site A - Internet
+    - endpoints: ["router-site-a:eth2", "router-internet:eth1"]
+    # Internet - Site B
+    - endpoints: ["router-internet:eth2", "router-site-b:eth1"]
+    # Site B 内部
+    - endpoints: ["router-site-b:eth2", "host-site-b:eth1"]

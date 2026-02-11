@@ -1,0 +1,61 @@
+# Day 9: VPN（WireGuard）- 演習用トポロジ（穴あき版）
+#
+# 【演習】
+# router-site-a と router-site-b に WireGuard VPN を設定して、
+# host-site-a と host-site-b 間で通信できるようにしてください。
+#
+# 構成:
+#   host-site-a ── router-site-a ══(VPN未設定)══ router-site-b ── host-site-b
+#                        └── router-internet ──┘
+#
+# ネットワーク設計:
+#   Site A LAN:       10.1.0.0/24
+#   Site A WAN:       203.0.113.0/24
+#   Site B WAN:       198.51.100.0/24
+#   Site B LAN:       10.2.0.0/24
+#   WireGuard:        10.10.10.0/24
+
+name: day9-exercise
+
+topology:
+  nodes:
+    # === Site A（未設定）===
+    router-site-a:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: IP アドレスと WireGuard を設定してください
+
+    host-site-a:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.1.0.10/24 dev eth1
+        - ip route add default via 10.1.0.1
+
+    # === インターネット（模擬 - 設定済み）===
+    router-internet:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 203.0.113.254/24 dev eth1
+        - ip addr add 198.51.100.254/24 dev eth2
+        - echo 1 > /proc/sys/net/ipv4/ip_forward
+
+    # === Site B（未設定）===
+    router-site-b:
+      kind: linux
+      image: ghcr.io/vyos/vyos:current
+      # 演習: IP アドレスと WireGuard を設定してください
+
+    host-site-b:
+      kind: linux
+      image: alpine:latest
+      exec:
+        - ip addr add 10.2.0.10/24 dev eth1
+        - ip route add default via 10.2.0.1
+
+  links:
+    - endpoints: ["host-site-a:eth1", "router-site-a:eth1"]
+    - endpoints: ["router-site-a:eth2", "router-internet:eth1"]
+    - endpoints: ["router-internet:eth2", "router-site-b:eth1"]
+    - endpoints: ["router-site-b:eth2", "host-site-b:eth1"]
