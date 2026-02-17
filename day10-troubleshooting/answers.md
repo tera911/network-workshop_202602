@@ -23,7 +23,7 @@ host1 の IP が 192.168.1.x/24 でないと、router のインターフェー�
 host1 で IP アドレスを修正:
 
 ```bash
-sudo docker exec clab-scenario1-host1 /bin/sh
+docker exec clab-scenario1-host1 /bin/sh
 ip addr del 192.168.10.10/24 dev eth1
 ip addr add 192.168.1.10/24 dev eth1
 ip route del default
@@ -33,7 +33,7 @@ ip route add default via 192.168.1.1
 ### 検証
 
 ```bash
-sudo docker exec clab-scenario1-host1 ping -c 3 192.168.2.10
+docker exec clab-scenario1-host1 ping -c 3 192.168.2.10
 ```
 
 ### tcpdump での診断方法
@@ -41,7 +41,7 @@ sudo docker exec clab-scenario1-host1 ping -c 3 192.168.2.10
 修正前に router の eth1 で tcpdump を実行しても、ARP リクエストすら見えない（サブネットが異なるため）:
 
 ```bash
-sudo docker exec clab-scenario1-router bash -c "tcpdump -i eth1 -n -c 5"
+docker exec clab-scenario1-router bash -c "tcpdump -i eth1 -n -c 5"
 ```
 
 ---
@@ -67,7 +67,7 @@ host2 → router2 → ???              ← 応答が返れない（経路なし�
 router2 に戻り経路を追加:
 
 ```bash
-sudo docker exec -it clab-scenario2-router2 /bin/vbash
+docker exec -it clab-scenario2-router2 /bin/vbash
 configure
 set protocols static route 192.168.1.0/24 next-hop 10.0.0.1
 commit
@@ -78,7 +78,7 @@ exit
 ### 検証
 
 ```bash
-sudo docker exec clab-scenario2-host1 ping -c 3 192.168.2.10
+docker exec clab-scenario2-host1 ping -c 3 192.168.2.10
 ```
 
 ### tcpdump での診断方法
@@ -87,11 +87,11 @@ router2 の eth2 で tcpdump を実行すると、ICMP echo request は到着し
 
 ```bash
 # router2 の eth1 側（host2 への方向）
-sudo docker exec clab-scenario2-router2 bash -c "tcpdump -i eth2 icmp -n -c 5"
+docker exec clab-scenario2-router2 bash -c "tcpdump -i eth2 icmp -n -c 5"
 # → echo request が見える（到着している）
 
 # router2 の eth1 側（router1 への方向）
-sudo docker exec clab-scenario2-router2 bash -c "tcpdump -i eth1 icmp -n -c 5"
+docker exec clab-scenario2-router2 bash -c "tcpdump -i eth1 icmp -n -c 5"
 # → echo reply が見えない（戻り経路がないため）
 ```
 
@@ -114,7 +114,7 @@ eth1 方向への通信に対して NAT が適用されてしまい、eth2（外
 ### 修正方法
 
 ```bash
-sudo docker exec -it clab-scenario3-router-gw /bin/vbash
+docker exec -it clab-scenario3-router-gw /bin/vbash
 configure
 delete nat source rule 10 outbound-interface name eth1
 set nat source rule 10 outbound-interface name eth2
@@ -126,7 +126,7 @@ exit
 ### 検証
 
 ```bash
-sudo docker exec clab-scenario3-host-internal ping -c 3 203.0.113.10
+docker exec clab-scenario3-host-internal ping -c 3 203.0.113.10
 ```
 
 ### tcpdump での診断方法
@@ -136,7 +136,7 @@ server-external 側で tcpdump を実行し、パケットが到着するか確�
 ```bash
 # 修正前: パケットが到着しても送信元が 192.168.1.10（プライベート IP）のまま
 # → server-external は応答を返せない（192.168.1.10 への経路がない）
-sudo docker exec clab-scenario3-server-external sh -c "apk add --no-cache tcpdump && tcpdump -i eth1 -n -c 5"
+docker exec clab-scenario3-server-external sh -c "apk add --no-cache tcpdump && tcpdump -i eth1 -n -c 5"
 
 # 修正後: 送信元が 203.0.113.1（NAT 変換済み）になる
 ```
@@ -158,7 +158,7 @@ DMZ の Web サーバーはポート **80** で待ち受けているため、ポ
 ### 修正方法
 
 ```bash
-sudo docker exec -it clab-scenario4-router-fw /bin/vbash
+docker exec -it clab-scenario4-router-fw /bin/vbash
 configure
 delete firewall ipv4 forward filter rule 30 destination port 8080
 set firewall ipv4 forward filter rule 30 destination port 80
@@ -171,10 +171,10 @@ exit
 
 ```bash
 # host-dmz で HTTP サーバーを起動
-sudo docker exec -it clab-scenario4-host-dmz sh -c "while true; do echo -e 'HTTP/1.0 200 OK\r\n\r\nHello' | nc -l -p 80; done" &
+docker exec -it clab-scenario4-host-dmz sh -c "while true; do echo -e 'HTTP/1.0 200 OK\r\n\r\nHello' | nc -l -p 80; done" &
 
 # host-external から HTTP アクセス
-sudo docker exec clab-scenario4-host-external sh -c "echo 'GET /' | nc -w 3 172.16.0.10 80"
+docker exec clab-scenario4-host-external sh -c "echo 'GET /' | nc -w 3 172.16.0.10 80"
 ```
 
 ### tcpdump での診断方法
@@ -182,7 +182,7 @@ sudo docker exec clab-scenario4-host-external sh -c "echo 'GET /' | nc -w 3 172.
 router-fw の eth2（DMZ 側）で tcpdump を実行して、TCP 80 のパケットが転送されているか確認:
 
 ```bash
-sudo docker exec clab-scenario4-router-fw bash -c "tcpdump -i eth2 port 80 -n -c 5"
+docker exec clab-scenario4-router-fw bash -c "tcpdump -i eth2 port 80 -n -c 5"
 # → 修正前: パケットが見えない（ファイアウォールでドロップ）
 # → 修正後: TCP SYN パケットが転送される
 ```
@@ -206,7 +206,7 @@ router-tokyo の eth1（172.16.1.2/24）が OSPF に参加しないため、rout
 ### 修正方法
 
 ```bash
-sudo docker exec -it clab-scenario5-router-tokyo /bin/vbash
+docker exec -it clab-scenario5-router-tokyo /bin/vbash
 configure
 delete protocols ospf area 0 network 172.16.10.0/24
 set protocols ospf area 0 network 172.16.1.0/24
@@ -219,10 +219,10 @@ exit
 
 ```bash
 # OSPF Neighbor 確認（10-30 秒待つ）
-sudo docker exec -it clab-scenario5-router-hq /bin/vbash -c "show ip ospf neighbor"
+docker exec -it clab-scenario5-router-hq /bin/vbash -c "show ip ospf neighbor"
 
 # 疎通確認
-sudo docker exec clab-scenario5-host-hq ping -c 3 10.1.0.10
+docker exec clab-scenario5-host-hq ping -c 3 10.1.0.10
 ```
 
 ### tcpdump での診断方法
@@ -230,12 +230,12 @@ sudo docker exec clab-scenario5-host-hq ping -c 3 10.1.0.10
 router-hq の eth2（Tokyo 向け）で OSPF パケットを確認:
 
 ```bash
-sudo docker exec clab-scenario5-router-hq bash -c "tcpdump -i eth2 proto ospf -n -c 10"
+docker exec clab-scenario5-router-hq bash -c "tcpdump -i eth2 proto ospf -n -c 10"
 # → OSPF Hello パケットは router-hq から送信されている
 # → router-tokyo からの Hello も見えるが、Neighbor が Full にならない
 
 # router-tokyo 側でも確認:
-sudo docker exec clab-scenario5-router-tokyo bash -c "tcpdump -i eth1 proto ospf -n -c 10"
+docker exec clab-scenario5-router-tokyo bash -c "tcpdump -i eth1 proto ospf -n -c 10"
 # → Hello パケットの交換は行われているが、network 文の不一致で
 #    eth1 が OSPF インターフェースとして認識されていない
 ```

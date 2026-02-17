@@ -3,22 +3,20 @@
 # 使い方: ./setup-scenario1.sh
 
 set -e
+source "$(dirname "$0")/../scripts/vyos-setup-helpers.sh"
 
-echo "=== router の設定を投入中 ==="
-sudo docker exec clab-scenario1-router /bin/vbash -c "
-source /opt/vyatta/etc/functions/script-template
-configure
-set interfaces ethernet eth1 address 192.168.1.1/24
+LAB_NAME="scenario1"
+
+wait_for_vyos "$LAB_NAME" router
+
+configure_vyos "$LAB_NAME" router \
+  "set interfaces ethernet eth1 address 192.168.1.1/24
 set interfaces ethernet eth2 address 192.168.2.1/24
-set protocols static route 192.168.10.0/24 next-hop 192.168.1.10
-commit
-save
-exit
-"
+set protocols static route 192.168.10.0/24 next-hop 192.168.1.10"
 
 echo ""
 echo "=== シナリオ 1 準備完了 ==="
 echo "症状: host1 から host2 へ ping が通らない"
 echo ""
 echo "調査開始:"
-echo "  sudo docker exec clab-scenario1-host1 ping -c 3 -W 2 192.168.2.10"
+echo "  docker exec clab-${LAB_NAME}-host1 ping -c 3 -W 2 192.168.2.10"

@@ -44,7 +44,7 @@ vrouter() {
     echo ">>> 接続中: $container"
     echo ">>> 終了するには 'exit' と入力"
     echo ""
-    sudo docker exec -it "$container" /bin/vbash
+    docker exec -it "$container" /bin/vbash
 }
 
 # ------------------------------------------------------------
@@ -79,7 +79,7 @@ vhost() {
     echo ">>> 接続中: $container"
     echo ">>> 終了するには 'exit' と入力"
     echo ""
-    sudo docker exec -it "$container" /bin/sh
+    docker exec -it "$container" /bin/sh
 }
 
 # ------------------------------------------------------------
@@ -116,7 +116,7 @@ vconnect() {
     fi
 
     echo ">>> 接続中: $container ($shell)"
-    sudo docker exec -it "$container" "$shell"
+    docker exec -it "$container" "$shell"
 }
 
 # ------------------------------------------------------------
@@ -194,7 +194,7 @@ vping() {
     fi
 
     echo ">>> $container から $dst へ ping"
-    sudo docker exec "$container" ping -c 3 "$dst"
+    docker exec "$container" ping -c 3 "$dst"
 }
 
 # ------------------------------------------------------------

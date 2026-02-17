@@ -104,7 +104,7 @@ sudo containerlab deploy -t topology.clab.yml
 router-gw にログインして DHCP の設定を確認:
 
 ```bash
-sudo docker exec -it clab-day6-dhcp-dns-router-gw /bin/vbash
+docker exec -it clab-day6-dhcp-dns-router-gw /bin/vbash
 ```
 
 ```bash
@@ -118,7 +118,7 @@ show dhcp server leases
 host-pc1 の IP アドレスを確認:
 
 ```bash
-sudo docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
+docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
 ip addr show eth1
 ```
 
@@ -134,7 +134,7 @@ inet 192.168.1.100/24 brd 192.168.1.255 scope global eth1
 host-pc3（手動設定）の IP アドレスを確認:
 
 ```bash
-sudo docker exec -it clab-day6-dhcp-dns-host-pc3 /bin/sh
+docker exec -it clab-day6-dhcp-dns-host-pc3 /bin/sh
 ip addr show eth1
 ```
 
@@ -150,7 +150,7 @@ inet 192.168.1.50/24 scope global eth1
 host-pc1 から他のホストに ping:
 
 ```bash
-sudo docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
+docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
 ```
 
 ```bash
@@ -168,7 +168,7 @@ ping -c 3 192.168.1.1
 host-pc1 にログイン:
 
 ```bash
-sudo docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
+docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
 ```
 
 登録済みのホスト名を名前解決:
@@ -231,7 +231,7 @@ sudo containerlab deploy -t exercise.clab.yml
 ### router-gw の設定
 
 ```bash
-sudo docker exec -it clab-day6-exercise-router-gw /bin/vbash
+docker exec -it clab-day6-exercise-router-gw /bin/vbash
 configure
 
 # インターフェース設定
@@ -264,35 +264,35 @@ exit
 
 ```bash
 # host-pc1
-sudo docker exec -it clab-day6-exercise-host-pc1 udhcpc -i eth1
+docker exec -it clab-day6-exercise-host-pc1 udhcpc -i eth1
 
 # host-pc2
-sudo docker exec -it clab-day6-exercise-host-pc2 udhcpc -i eth1
+docker exec -it clab-day6-exercise-host-pc2 udhcpc -i eth1
 ```
 
 ### 確認
 
 1. host-pc1 と host-pc2 に IP アドレスが割り当てられたか確認:
    ```bash
-   sudo docker exec clab-day6-exercise-host-pc1 ip addr show eth1
-   sudo docker exec clab-day6-exercise-host-pc2 ip addr show eth1
+   docker exec clab-day6-exercise-host-pc1 ip addr show eth1
+   docker exec clab-day6-exercise-host-pc2 ip addr show eth1
    ```
 
 2. DHCP リース情報を確認:
    ```bash
-   sudo docker exec -it clab-day6-exercise-router-gw /bin/vbash
+   docker exec -it clab-day6-exercise-router-gw /bin/vbash
    show dhcp server leases
    ```
 
 3. ホスト間で ping が通るか確認:
    ```bash
-   sudo docker exec clab-day6-exercise-host-pc1 ping -c 3 192.168.1.50
+   docker exec clab-day6-exercise-host-pc1 ping -c 3 192.168.1.50
    ```
 
 4. ホスト名で名前解決できるか確認:
    ```bash
-   sudo docker exec clab-day6-exercise-host-pc1 nslookup server.lab 192.168.1.1
-   sudo docker exec clab-day6-exercise-host-pc1 ping -c 3 server.lab
+   docker exec clab-day6-exercise-host-pc1 nslookup server.lab 192.168.1.1
+   docker exec clab-day6-exercise-host-pc1 ping -c 3 server.lab
    ```
 
 ---
@@ -304,7 +304,7 @@ sudo docker exec -it clab-day6-exercise-host-pc2 udhcpc -i eth1
 好きなホスト名を追加登録してみましょう:
 
 ```bash
-sudo docker exec -it clab-day6-exercise-router-gw /bin/vbash
+docker exec -it clab-day6-exercise-router-gw /bin/vbash
 configure
 
 # 例: 自分のマシンに名前をつける
@@ -319,7 +319,7 @@ exit
 登録後、ホストから確認:
 
 ```bash
-sudo docker exec clab-day6-exercise-host-pc1 nslookup mypc.lab 192.168.1.1
+docker exec clab-day6-exercise-host-pc1 nslookup mypc.lab 192.168.1.1
 ```
 
 > 実際の企業ネットワークでは、Active Directory や BIND などの DNS サーバーで同様の管理をしています。
@@ -341,7 +341,7 @@ save
 
 MAC アドレスの確認方法:
 ```bash
-sudo docker exec clab-day6-exercise-host-pc1 ip link show eth1
+docker exec clab-day6-exercise-host-pc1 ip link show eth1
 ```
 
 ---

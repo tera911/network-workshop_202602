@@ -33,7 +33,7 @@ sudo containerlab deploy -t <file>.clab.yml
 sudo containerlab inspect -t <file>.clab.yml
 
 # ノードに接続
-sudo docker exec -it <node-name> /bin/vbash
+docker exec -it <node-name> /bin/vbash
 
 # ラボ破棄
 sudo containerlab destroy -t <file>.clab.yml

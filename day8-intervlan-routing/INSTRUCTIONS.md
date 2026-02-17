@@ -107,7 +107,7 @@ sudo containerlab deploy -t topology.clab.yml
 まず、同じ VLAN 内の通信を確認:
 
 ```bash
-sudo docker exec -it clab-day8-intervlan-routing-host1 /bin/sh
+docker exec -it clab-day8-intervlan-routing-host1 /bin/sh
 ```
 
 ```bash
@@ -145,7 +145,7 @@ traceroute 192.168.20.12
 host1 から `exit` で抜けてから、スイッチにログインしてブリッジ構成を確認:
 
 ```bash
-sudo docker exec -it clab-day8-intervlan-routing-switch /bin/sh
+docker exec -it clab-day8-intervlan-routing-switch /bin/sh
 ```
 
 ```bash
@@ -164,7 +164,7 @@ ip link show master br-vlan20
 switch から `exit` で抜けてから、router-gw にログイン:
 
 ```bash
-sudo docker exec -it clab-day8-intervlan-routing-router-gw /bin/vbash
+docker exec -it clab-day8-intervlan-routing-router-gw /bin/vbash
 ```
 
 ```bash
@@ -206,7 +206,7 @@ sudo containerlab deploy -t exercise.clab.yml
 ### Step 1: スイッチで VLAN を分離する（Day 3 の復習）
 
 ```bash
-sudo docker exec -it clab-day8-exercise-switch /bin/sh
+docker exec -it clab-day8-exercise-switch /bin/sh
 
 # 現在のブリッジからポートを外す
 ip link set eth1 nomaster
@@ -253,7 +253,7 @@ exit
 ### Step 3: VyOS でサブインターフェースを設定する
 
 ```bash
-sudo docker exec -it clab-day8-exercise-router-gw /bin/vbash
+docker exec -it clab-day8-exercise-router-gw /bin/vbash
 configure
 
 # VLAN 10 サブインターフェース
@@ -271,13 +271,13 @@ exit
 
 ```bash
 # 同じ VLAN 内（host1 → host3: 成功するはず）
-sudo docker exec clab-day8-exercise-host1 ping -c 3 192.168.10.13
+docker exec clab-day8-exercise-host1 ping -c 3 192.168.10.13
 
 # 異なる VLAN 間（host1 → host2: ルーター経由で成功するはず）
-sudo docker exec clab-day8-exercise-host1 ping -c 3 192.168.20.12
+docker exec clab-day8-exercise-host1 ping -c 3 192.168.20.12
 
 # 経路確認
-sudo docker exec clab-day8-exercise-host1 traceroute 192.168.20.12
+docker exec clab-day8-exercise-host1 traceroute 192.168.20.12
 ```
 
 ---

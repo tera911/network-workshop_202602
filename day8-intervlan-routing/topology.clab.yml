@@ -61,7 +61,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.10.11/24 dev eth1
-        - ip route add default via 192.168.10.1
+        - ip route replace default via 192.168.10.1
         - ip link set eth1 up
 
     host3:
@@ -69,7 +69,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.10.13/24 dev eth1
-        - ip route add default via 192.168.10.1
+        - ip route replace default via 192.168.10.1
         - ip link set eth1 up
 
     # VLAN 20 のホスト（開発部）
@@ -78,7 +78,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.20.12/24 dev eth1
-        - ip route add default via 192.168.20.1
+        - ip route replace default via 192.168.20.1
         - ip link set eth1 up
 
     host4:
@@ -86,7 +86,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.20.14/24 dev eth1
-        - ip route add default via 192.168.20.1
+        - ip route replace default via 192.168.20.1
         - ip link set eth1 up
 
   links:

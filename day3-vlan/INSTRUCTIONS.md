@@ -110,7 +110,7 @@ sudo containerlab deploy -t exercise.clab.yml
 host1 から他のすべてのホストに ping を打ってみましょう:
 
 ```bash
-sudo docker exec -it clab-day3-exercise-host1 /bin/sh
+docker exec -it clab-day3-exercise-host1 /bin/sh
 ```
 
 ```bash
@@ -139,7 +139,7 @@ sudo containerlab deploy -t topology.clab.yml
 host1 から ping を試してみましょう:
 
 ```bash
-sudo docker exec -it clab-day3-vlan-host1 /bin/sh
+docker exec -it clab-day3-vlan-host1 /bin/sh
 ```
 
 ```bash
@@ -160,7 +160,7 @@ ping -c 2 192.168.20.4
 host1 から `exit` で抜けてから、スイッチにログインしてブリッジの状態を確認します:
 
 ```bash
-sudo docker exec -it clab-day3-vlan-switch /bin/sh
+docker exec -it clab-day3-vlan-switch /bin/sh
 ```
 
 ```bash
@@ -199,7 +199,7 @@ sudo containerlab deploy -t exercise.clab.yml
 スイッチにログインして、ブリッジを分離してください:
 
 ```bash
-sudo docker exec -it clab-day3-exercise-switch /bin/sh
+docker exec -it clab-day3-exercise-switch /bin/sh
 ```
 
 現在の構成（すべて同じブリッジ）:
@@ -238,10 +238,10 @@ ip link set eth4 master br-vlan20   # host4 → VLAN20
 
 ```bash
 # host1 から host3（同じ VLAN 10）→ 成功するはず
-sudo docker exec -it clab-day3-exercise-host1 ping -c 2 192.168.10.3
+docker exec -it clab-day3-exercise-host1 ping -c 2 192.168.10.3
 
 # host1 から host2（異なる VLAN 20）→ 失敗するはず
-sudo docker exec -it clab-day3-exercise-host1 ping -c 2 192.168.20.2
+docker exec -it clab-day3-exercise-host1 ping -c 2 192.168.20.2
 ```
 
 ---

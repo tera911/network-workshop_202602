@@ -38,21 +38,21 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 10.0.0.10/24 dev eth1
-        - ip route add default via 10.0.0.1
+        - ip route replace default via 10.0.0.1
 
     host-tokyo:
       kind: linux
       image: alpine:latest
       exec:
         - ip addr add 10.1.0.10/24 dev eth1
-        - ip route add default via 10.1.0.1
+        - ip route replace default via 10.1.0.1
 
     host-osaka:
       kind: linux
       image: alpine:latest
       exec:
         - ip addr add 10.2.0.10/24 dev eth1
-        - ip route add default via 10.2.0.1
+        - ip route replace default via 10.2.0.1
 
   links:
     - endpoints: ["host-hq:eth1", "router-hq:eth1"]

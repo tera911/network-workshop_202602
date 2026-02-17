@@ -143,17 +143,17 @@ sudo containerlab deploy -t scenario1.clab.yml
 
 1. まず host1 から host2 に ping を試す:
    ```bash
-   sudo docker exec clab-scenario1-host1 ping -c 3 -W 2 192.168.2.10
+   docker exec clab-scenario1-host1 ping -c 3 -W 2 192.168.2.10
    ```
 
 2. host1 の IP 設定を確認:
    ```bash
-   sudo docker exec clab-scenario1-host1 ip addr show eth1
+   docker exec clab-scenario1-host1 ip addr show eth1
    ```
 
 3. router のインターフェースを確認:
    ```bash
-   sudo docker exec -it clab-scenario1-router /bin/vbash
+   docker exec -it clab-scenario1-router /bin/vbash
    show interfaces
    ```
 
@@ -184,12 +184,12 @@ sudo containerlab deploy -t scenario2.clab.yml
 
 1. host1 から host2 に ping:
    ```bash
-   sudo docker exec clab-scenario2-host1 ping -c 3 -W 2 192.168.2.10
+   docker exec clab-scenario2-host1 ping -c 3 -W 2 192.168.2.10
    ```
 
 2. router1 から host2 に ping:
    ```bash
-   sudo docker exec -it clab-scenario2-router1 /bin/vbash
+   docker exec -it clab-scenario2-router1 /bin/vbash
    ping 192.168.2.10 count 3
    ```
 
@@ -200,7 +200,7 @@ sudo containerlab deploy -t scenario2.clab.yml
 
 4. router2 側で tcpdump を実行して、リクエストが到着するか確認:
    ```bash
-   sudo docker exec clab-scenario2-router2 bash -c "tcpdump -i eth2 icmp -n -c 5"
+   docker exec clab-scenario2-router2 bash -c "tcpdump -i eth2 icmp -n -c 5"
    ```
 
 5. 片方向の通信はどこで途切れているか？
@@ -230,18 +230,18 @@ sudo containerlab deploy -t scenario3.clab.yml
 
 1. host-internal から server-external に ping:
    ```bash
-   sudo docker exec clab-scenario3-host-internal ping -c 3 -W 2 203.0.113.10
+   docker exec clab-scenario3-host-internal ping -c 3 -W 2 203.0.113.10
    ```
 
 2. router-gw の NAT 設定を確認:
    ```bash
-   sudo docker exec -it clab-scenario3-router-gw /bin/vbash
+   docker exec -it clab-scenario3-router-gw /bin/vbash
    show nat source rules
    ```
 
 3. server-external 側で tcpdump:
    ```bash
-   sudo docker exec clab-scenario3-server-external sh -c "apk add --no-cache tcpdump && tcpdump -i eth1 -n -c 10"
+   docker exec clab-scenario3-server-external sh -c "apk add --no-cache tcpdump && tcpdump -i eth1 -n -c 10"
    ```
    別ターミナルで ping を送信し、パケットの送信元 IP を確認
 
@@ -273,22 +273,22 @@ sudo containerlab deploy -t scenario4.clab.yml
 
 1. host-internal → host-external の ping を確認（通るはず）:
    ```bash
-   sudo docker exec clab-scenario4-host-internal ping -c 3 203.0.113.10
+   docker exec clab-scenario4-host-internal ping -c 3 203.0.113.10
    ```
 
 2. host-dmz で HTTP サーバーを起動:
    ```bash
-   sudo docker exec -it clab-scenario4-host-dmz sh -c "while true; do echo -e 'HTTP/1.0 200 OK\r\n\r\nHello' | nc -l -p 80; done" &
+   docker exec -it clab-scenario4-host-dmz sh -c "while true; do echo -e 'HTTP/1.0 200 OK\r\n\r\nHello' | nc -l -p 80; done" &
    ```
 
 3. host-external から HTTP アクセス:
    ```bash
-   sudo docker exec clab-scenario4-host-external sh -c "echo 'GET /' | nc -w 3 172.16.0.10 80"
+   docker exec clab-scenario4-host-external sh -c "echo 'GET /' | nc -w 3 172.16.0.10 80"
    ```
 
 4. router-fw のファイアウォールルールを確認:
    ```bash
-   sudo docker exec -it clab-scenario4-router-fw /bin/vbash
+   docker exec -it clab-scenario4-router-fw /bin/vbash
    show firewall
    ```
 
@@ -320,12 +320,12 @@ sudo containerlab deploy -t scenario5.clab.yml
 
 1. host-hq から host-tokyo に ping:
    ```bash
-   sudo docker exec clab-scenario5-host-hq ping -c 3 -W 2 10.1.0.10
+   docker exec clab-scenario5-host-hq ping -c 3 -W 2 10.1.0.10
    ```
 
 2. router-hq の OSPF Neighbor を確認:
    ```bash
-   sudo docker exec -it clab-scenario5-router-hq /bin/vbash
+   docker exec -it clab-scenario5-router-hq /bin/vbash
    show ip ospf neighbor
    ```
    → Neighbor が確立されていない場合、設定に問題がある

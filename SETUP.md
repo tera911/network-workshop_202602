@@ -38,6 +38,7 @@ ls cloud-init.yaml
 multipass launch \
   --name workshop \
   --disk 10G \
+  --memory 2G \
   --cloud-init cloud-init.yaml \
   22.04
 ```
@@ -142,7 +143,7 @@ sudo containerlab inspect -t exercise.clab.yml
 ### VyOS にログイン
 
 ```bash
-sudo docker exec -it clab-day1-exercise-router1 /bin/vbash
+docker exec -it clab-day1-exercise-router1 /bin/vbash
 ```
 
 VyOS プロンプトが表示されれば成功:

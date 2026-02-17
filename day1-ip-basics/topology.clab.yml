@@ -16,18 +16,10 @@ topology:
     router1:
       kind: linux
       image: ghcr.io/vyos/vyos:current
-      exec:
-        - /bin/bash -c "vtysh -c 'configure terminal' -c 'interface eth1' -c 'ip address 192.168.1.1/24' -c 'exit' -c 'interface eth2' -c 'ip address 10.0.0.1/24' -c 'exit' -c 'ip route 192.168.2.0/24 10.0.0.2' -c 'end' -c 'write memory'" || true
-      binds:
-        - configs/router1.conf:/opt/vyatta/etc/config/config.boot:ro
 
     router2:
       kind: linux
       image: ghcr.io/vyos/vyos:current
-      exec:
-        - /bin/bash -c "vtysh -c 'configure terminal' -c 'interface eth1' -c 'ip address 10.0.0.2/24' -c 'exit' -c 'interface eth2' -c 'ip address 192.168.2.1/24' -c 'exit' -c 'ip route 192.168.1.0/24 10.0.0.1' -c 'end' -c 'write memory'" || true
-      binds:
-        - configs/router2.conf:/opt/vyatta/etc/config/config.boot:ro
 
     # ホスト（Alpine Linux）
     host1:
@@ -35,14 +27,14 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.1.10/24 dev eth1
-        - ip route add default via 192.168.1.1
+        - ip route replace default via 192.168.1.1
 
     host2:
       kind: linux
       image: alpine:latest
       exec:
         - ip addr add 192.168.2.10/24 dev eth1
-        - ip route add default via 192.168.2.1
+        - ip route replace default via 192.168.2.1
 
   links:
     - endpoints: ["host1:eth1", "router1:eth1"]

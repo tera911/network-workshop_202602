@@ -37,7 +37,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 10.0.0.10/24 dev eth1
-        - ip route add default via 10.0.0.1
+        - ip route replace default via 10.0.0.1
 
     # === 東京拠点 ===
     router-tokyo:
@@ -49,7 +49,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 10.1.0.10/24 dev eth1
-        - ip route add default via 10.1.0.1
+        - ip route replace default via 10.1.0.1
 
     # === 大阪拠点 ===
     router-osaka:
@@ -61,7 +61,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 10.2.0.10/24 dev eth1
-        - ip route add default via 10.2.0.1
+        - ip route replace default via 10.2.0.1
 
   links:
     # HQ 内部

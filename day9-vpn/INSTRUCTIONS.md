@@ -105,7 +105,7 @@ sudo containerlab deploy -t topology.clab.yml
 router-site-a にログイン:
 
 ```bash
-sudo docker exec -it clab-day9-vpn-router-site-a /bin/vbash
+docker exec -it clab-day9-vpn-router-site-a /bin/vbash
 ```
 
 ```bash
@@ -131,7 +131,7 @@ show interfaces wireguard wg0
 router-site-a から `exit` で抜けてから、host-site-a から host-site-b に ping:
 
 ```bash
-sudo docker exec -it clab-day9-vpn-host-site-a /bin/sh
+docker exec -it clab-day9-vpn-host-site-a /bin/sh
 ```
 
 ```bash
@@ -163,7 +163,7 @@ VPN の暗号化を確認するために、WAN 側でパケットキャプチャ
 **ターミナル1**: router-internet でキャプチャ
 
 ```bash
-sudo docker exec -it clab-day9-vpn-router-internet /bin/sh
+docker exec -it clab-day9-vpn-router-internet /bin/sh
 apk add --no-cache tcpdump
 tcpdump -i eth1 -n
 ```
@@ -171,7 +171,7 @@ tcpdump -i eth1 -n
 **ターミナル2**: host-site-a から ping
 
 ```bash
-sudo docker exec clab-day9-vpn-host-site-a ping -c 3 10.2.0.10
+docker exec clab-day9-vpn-host-site-a ping -c 3 10.2.0.10
 ```
 
 ターミナル1 の出力:
@@ -187,7 +187,7 @@ IP 203.0.113.1.51820 > 198.51.100.1.51820: UDP, length ...
 router-site-a で WireGuard のピア（接続相手）情報を確認:
 
 ```bash
-sudo docker exec -it clab-day9-vpn-router-site-a /bin/vbash
+docker exec -it clab-day9-vpn-router-site-a /bin/vbash
 show wireguard peers
 ```
 
@@ -212,24 +212,24 @@ sudo containerlab deploy -t exercise.clab.yml
 
 **router-site-a:**
 ```bash
-sudo docker exec clab-day9-exercise-router-site-a bash -c "wg genkey | tee /tmp/site-a-private | wg pubkey > /tmp/site-a-public"
-SITE_A_PUBKEY=$(sudo docker exec clab-day9-exercise-router-site-a cat /tmp/site-a-public)
-SITE_A_PRIVKEY=$(sudo docker exec clab-day9-exercise-router-site-a cat /tmp/site-a-private)
+docker exec clab-day9-exercise-router-site-a bash -c "wg genkey | tee /tmp/site-a-private | wg pubkey > /tmp/site-a-public"
+SITE_A_PUBKEY=$(docker exec clab-day9-exercise-router-site-a cat /tmp/site-a-public)
+SITE_A_PRIVKEY=$(docker exec clab-day9-exercise-router-site-a cat /tmp/site-a-private)
 echo "Site A Public Key: $SITE_A_PUBKEY"
 ```
 
 **router-site-b:**
 ```bash
-sudo docker exec clab-day9-exercise-router-site-b bash -c "wg genkey | tee /tmp/site-b-private | wg pubkey > /tmp/site-b-public"
-SITE_B_PUBKEY=$(sudo docker exec clab-day9-exercise-router-site-b cat /tmp/site-b-public)
-SITE_B_PRIVKEY=$(sudo docker exec clab-day9-exercise-router-site-b cat /tmp/site-b-private)
+docker exec clab-day9-exercise-router-site-b bash -c "wg genkey | tee /tmp/site-b-private | wg pubkey > /tmp/site-b-public"
+SITE_B_PUBKEY=$(docker exec clab-day9-exercise-router-site-b cat /tmp/site-b-public)
+SITE_B_PRIVKEY=$(docker exec clab-day9-exercise-router-site-b cat /tmp/site-b-private)
 echo "Site B Public Key: $SITE_B_PUBKEY"
 ```
 
 ### Step 2: router-site-a を設定する
 
 ```bash
-sudo docker exec -it clab-day9-exercise-router-site-a /bin/vbash
+docker exec -it clab-day9-exercise-router-site-a /bin/vbash
 configure
 
 # インターフェース設定
@@ -273,10 +273,10 @@ exit
 
 ```bash
 # Site A → Site B（VPN 経由）
-sudo docker exec clab-day9-exercise-host-site-a ping -c 3 10.2.0.10
+docker exec clab-day9-exercise-host-site-a ping -c 3 10.2.0.10
 
 # Site B → Site A
-sudo docker exec clab-day9-exercise-host-site-b ping -c 3 10.1.0.10
+docker exec clab-day9-exercise-host-site-b ping -c 3 10.1.0.10
 ```
 
 ---

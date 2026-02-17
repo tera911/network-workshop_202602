@@ -70,6 +70,11 @@ cd day1-ip-basics
 sudo containerlab deploy -t topology.clab.yml
 ```
 
+ルーターの設定を投入します:
+```bash
+./setup-complete.sh
+```
+
 起動したら、ノードの状態を確認:
 ```bash
 sudo containerlab inspect -t topology.clab.yml
@@ -79,7 +84,7 @@ sudo containerlab inspect -t topology.clab.yml
 
 router1 にログインしてみましょう:
 ```bash
-sudo docker exec -it clab-day1-ip-basics-router1 /bin/vbash
+docker exec -it clab-day1-ip-basics-router1 /bin/vbash
 ```
 
 ### Step 3: VyOS の基本操作を覚える
@@ -137,7 +142,7 @@ host1 から host2 への経路を確認してみましょう。
 
 router1 から `exit` で抜けてから、host1 にログインします:
 ```bash
-sudo docker exec -it clab-day1-ip-basics-host1 /bin/sh
+docker exec -it clab-day1-ip-basics-host1 /bin/sh
 ```
 
 traceroute を実行:
@@ -174,7 +179,7 @@ sudo containerlab deploy -t exercise.clab.yml
 #### router1 の設定
 
 ```bash
-sudo docker exec -it clab-day1-exercise-router1 /bin/vbash
+docker exec -it clab-day1-exercise-router1 /bin/vbash
 ```
 
 設定モードに入る:
@@ -209,7 +214,7 @@ exit
 host1 から host2 へ ping が通れば成功です:
 
 ```bash
-sudo docker exec -it clab-day1-exercise-host1 ping -c 3 192.168.2.10
+docker exec -it clab-day1-exercise-host1 ping -c 3 192.168.2.10
 ```
 
 ---

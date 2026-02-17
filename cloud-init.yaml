@@ -50,7 +50,7 @@ write_files:
               return 1
           fi
           echo ">>> 接続: $container (exit で終了)"
-          sudo docker exec -it "$container" /bin/vbash
+          docker exec -it "$container" /bin/vbash
       }
 
       # Alpine ホストに接続
@@ -69,7 +69,7 @@ write_files:
               return 1
           fi
           echo ">>> 接続: $container (exit で終了)"
-          sudo docker exec -it "$container" /bin/sh
+          docker exec -it "$container" /bin/sh
       }
 
       # 自動判定で接続
@@ -89,7 +89,7 @@ write_files:
           local shell="/bin/sh"
           echo "$image" | grep -qi "vyos" && shell="/bin/vbash"
           echo ">>> 接続: $container ($shell)"
-          sudo docker exec -it "$container" "$shell"
+          docker exec -it "$container" "$shell"
       }
 
       # ラボ状態表示
@@ -123,7 +123,7 @@ write_files:
           local container=$(docker ps --format "{{.Names}}" | grep -i "$src" | head -1)
           [ -z "$container" ] && { echo "エラー: '$src' が見つかりません"; return 1; }
           echo ">>> $container -> $dst"
-          sudo docker exec "$container" ping -c 3 "$dst"
+          docker exec "$container" ping -c 3 "$dst"
       }
 
       # ヘルプ
@@ -166,6 +166,7 @@ runcmd:
   # 注意: VyOS公式イメージが取得できない場合は、手動でビルドが必要です
   #       詳細は docs/BUILD-VYOS.md を参照してください
   - docker pull ghcr.io/tera911/vyos:1.5 || echo "VyOS image not available, manual build required"
+  - docker tag ghcr.io/tera911/vyos:1.5 ghcr.io/vyos/vyos:current || echo "VyOS image not available, manual build required"
   - docker pull alpine:latest
 
   # 作業ディレクトリ作成

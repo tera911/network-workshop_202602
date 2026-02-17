@@ -94,7 +94,7 @@ sudo containerlab deploy -t topology.clab.yml
 router-hq にログインして、ルーティングテーブルを見てみましょう:
 
 ```bash
-sudo docker exec -it clab-day2-static-routing-router-hq /bin/vbash
+docker exec -it clab-day2-static-routing-router-hq /bin/vbash
 ```
 
 ```bash
@@ -113,7 +113,7 @@ router-hq は以下を知っている必要があります:
 router-hq から `exit` で抜けてから、host-hq にログインします:
 
 ```bash
-sudo docker exec -it clab-day2-static-routing-host-hq /bin/sh
+docker exec -it clab-day2-static-routing-host-hq /bin/sh
 ```
 
 ```bash
@@ -134,7 +134,7 @@ traceroute 10.1.0.10
 host-hq から `exit` で抜けてから、host-tokyo で traceroute を実行してみましょう:
 
 ```bash
-sudo docker exec -it clab-day2-static-routing-host-tokyo /bin/sh
+docker exec -it clab-day2-static-routing-host-tokyo /bin/sh
 traceroute 10.2.0.10
 ```
 
@@ -167,7 +167,7 @@ sudo containerlab deploy -t exercise.clab.yml
 ### router-hq の設定
 
 ```bash
-sudo docker exec -it clab-day2-exercise-router-hq /bin/vbash
+docker exec -it clab-day2-exercise-router-hq /bin/vbash
 configure
 
 # インターフェース設定
@@ -187,7 +187,7 @@ exit
 ### router-tokyo の設定
 
 ```bash
-sudo docker exec -it clab-day2-exercise-router-tokyo /bin/vbash
+docker exec -it clab-day2-exercise-router-tokyo /bin/vbash
 configure
 
 # インターフェース設定
@@ -220,13 +220,13 @@ exit
 
 ```bash
 # HQ → Tokyo
-sudo docker exec -it clab-day2-exercise-host-hq ping -c 3 10.1.0.10
+docker exec -it clab-day2-exercise-host-hq ping -c 3 10.1.0.10
 
 # HQ → Osaka
-sudo docker exec -it clab-day2-exercise-host-hq ping -c 3 10.2.0.10
+docker exec -it clab-day2-exercise-host-hq ping -c 3 10.2.0.10
 
 # Tokyo → Osaka（最も遠い組み合わせ）
-sudo docker exec -it clab-day2-exercise-host-tokyo ping -c 3 10.2.0.10
+docker exec -it clab-day2-exercise-host-tokyo ping -c 3 10.2.0.10
 ```
 
 ---

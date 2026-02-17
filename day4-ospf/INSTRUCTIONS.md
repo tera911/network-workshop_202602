@@ -125,7 +125,7 @@ sudo containerlab deploy -t topology.clab.yml
 router-hq にログイン:
 
 ```bash
-sudo docker exec -it clab-day4-ospf-router-hq /bin/vbash
+docker exec -it clab-day4-ospf-router-hq /bin/vbash
 ```
 
 OSPF Neighbor を確認:
@@ -168,7 +168,7 @@ C    172.16.2.0/24 is directly connected, eth3
 router-hq から `exit` で抜けてから、host-hq にログインします:
 
 ```bash
-sudo docker exec -it clab-day4-ospf-host-hq /bin/sh
+docker exec -it clab-day4-ospf-host-hq /bin/sh
 ```
 
 ```bash
@@ -190,7 +190,7 @@ traceroute 10.1.0.10
 host-hq から `exit` で抜けてから、host-tokyo にログインします:
 
 ```bash
-sudo docker exec -it clab-day4-ospf-host-tokyo /bin/sh
+docker exec -it clab-day4-ospf-host-tokyo /bin/sh
 traceroute 10.2.0.10
 ```
 
@@ -208,7 +208,7 @@ Tokyo - Osaka 間の直接リンクを切断してみましょう。
 host-tokyo から `exit` で抜けてから、router-tokyo にログインします:
 
 ```bash
-sudo docker exec -it clab-day4-ospf-router-tokyo /bin/vbash
+docker exec -it clab-day4-ospf-router-tokyo /bin/vbash
 ```
 
 eth3（Osaka への直接リンク）を Down:
@@ -225,7 +225,7 @@ exit
 再度 host-tokyo から traceroute を実行します:
 
 ```bash
-sudo docker exec -it clab-day4-ospf-host-tokyo /bin/sh
+docker exec -it clab-day4-ospf-host-tokyo /bin/sh
 traceroute 10.2.0.10
 ```
 
@@ -244,7 +244,7 @@ traceroute 10.2.0.10
 host-tokyo から `exit` で抜けてから、router-tokyo でリンクを復旧します:
 
 ```bash
-sudo docker exec -it clab-day4-ospf-router-tokyo /bin/vbash
+docker exec -it clab-day4-ospf-router-tokyo /bin/vbash
 configure
 delete interfaces ethernet eth3 disable
 commit
@@ -270,7 +270,7 @@ sudo containerlab deploy -t exercise.clab.yml
 ### router-hq の設定
 
 ```bash
-sudo docker exec -it clab-day4-exercise-router-hq /bin/vbash
+docker exec -it clab-day4-exercise-router-hq /bin/vbash
 configure
 
 # インターフェース設定
@@ -292,7 +292,7 @@ exit
 ### router-tokyo の設定
 
 ```bash
-sudo docker exec -it clab-day4-exercise-router-tokyo /bin/vbash
+docker exec -it clab-day4-exercise-router-tokyo /bin/vbash
 configure
 
 # インターフェース設定

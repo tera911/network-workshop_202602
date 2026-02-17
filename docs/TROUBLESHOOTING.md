@@ -134,7 +134,7 @@ cat -A topology.clab.yml  # 不正な文字を確認
 **解決策**:
 ```bash
 # ログを確認
-sudo docker logs <container-name>
+docker logs <container-name>
 
 # メモリ不足の場合が多い
 free -h
@@ -166,7 +166,7 @@ sudo containerlab destroy -t topology.clab.yml
 sudo containerlab deploy -t topology.clab.yml
 
 # インターフェース確認
-sudo docker exec <container> ip link show
+docker exec <container> ip link show
 ```
 
 ---
@@ -180,10 +180,10 @@ sudo docker exec <container> ip link show
 **解決策**:
 ```bash
 # 正しいシェルパス
-sudo docker exec -it <container> /bin/vbash
+docker exec -it <container> /bin/vbash
 
 # それでもダメなら bash を試す
-sudo docker exec -it <container> /bin/bash
+docker exec -it <container> /bin/bash
 
 # コンテナが VyOS か確認
 docker inspect <container> --format '{{.Config.Image}}'
@@ -200,7 +200,7 @@ docker inspect <container> --format '{{.Config.Image}}'
 
 # /bin/sh で入ってしまった場合
 exit
-sudo docker exec -it <container> /bin/vbash
+docker exec -it <container> /bin/vbash
 ```
 
 ### commit がエラーになる

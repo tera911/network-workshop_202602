@@ -91,7 +91,7 @@ sudo containerlab inspect -t topology.clab.yml
 router-gw にログインして、NAT の設定を見てみましょう:
 
 ```bash
-sudo docker exec -it clab-day5-nat-router-gw /bin/vbash
+docker exec -it clab-day5-nat-router-gw /bin/vbash
 ```
 
 ```bash
@@ -113,7 +113,7 @@ rule 10:
 router-gw から `exit` で抜けてから、host-internal から server-external に ping:
 
 ```bash
-sudo docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
+docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
 ```
 
 → NAT のおかげで通信が成功！
@@ -125,7 +125,7 @@ sudo docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
 **ターミナル1**: server-external でパケットキャプチャを開始
 
 ```bash
-sudo docker exec -it clab-day5-nat-server-external /bin/sh
+docker exec -it clab-day5-nat-server-external /bin/sh
 apk add --no-cache tcpdump
 tcpdump -i eth1 icmp -n
 ```
@@ -133,7 +133,7 @@ tcpdump -i eth1 icmp -n
 **ターミナル2**: host-internal から ping を送信
 
 ```bash
-sudo docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
+docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
 ```
 
 ターミナル1の出力を確認:
@@ -151,14 +151,14 @@ server-external で `exit` → Ctrl+C で tcpdump を止めてから、今度は
 **ターミナル1**: router-gw の内部側でキャプチャ
 
 ```bash
-sudo docker exec -it clab-day5-nat-router-gw /bin/bash
+docker exec -it clab-day5-nat-router-gw /bin/bash
 tcpdump -i eth1 icmp -n
 ```
 
 **ターミナル2**: 再び ping
 
 ```bash
-sudo docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
+docker exec -it clab-day5-nat-host-internal ping -c 3 203.0.113.10
 ```
 
 ターミナル1の出力:
@@ -181,7 +181,7 @@ IP 203.0.113.10 > 192.168.1.10: ICMP echo reply
 router-gw で NAT の変換テーブルを確認:
 
 ```bash
-sudo docker exec -it clab-day5-nat-router-gw /bin/vbash
+docker exec -it clab-day5-nat-router-gw /bin/vbash
 show nat source translations
 ```
 
@@ -205,7 +205,7 @@ sudo containerlab deploy -t exercise.clab.yml
 #### Step 1: NAT なしで通信を試す
 
 ```bash
-sudo docker exec -it clab-day5-exercise-host-internal ping -c 3 203.0.113.10
+docker exec -it clab-day5-exercise-host-internal ping -c 3 203.0.113.10
 ```
 
 → 通信失敗（server-external は応答を 192.168.1.10 に返そうとするが、ルーティングできない）
@@ -213,7 +213,7 @@ sudo docker exec -it clab-day5-exercise-host-internal ping -c 3 203.0.113.10
 #### Step 2: router-gw を設定する
 
 ```bash
-sudo docker exec -it clab-day5-exercise-router-gw /bin/vbash
+docker exec -it clab-day5-exercise-router-gw /bin/vbash
 configure
 
 # インターフェース設定
@@ -235,7 +235,7 @@ exit
 NAT 設定後に再度 ping:
 
 ```bash
-sudo docker exec -it clab-day5-exercise-host-internal ping -c 3 203.0.113.10
+docker exec -it clab-day5-exercise-host-internal ping -c 3 203.0.113.10
 ```
 
 → 通信成功！

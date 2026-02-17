@@ -107,7 +107,7 @@ sudo containerlab deploy -t topology.clab.yml
 router-fw にログインしてファイアウォール設定を確認:
 
 ```bash
-sudo docker exec -it clab-day7-firewall-router-fw /bin/vbash
+docker exec -it clab-day7-firewall-router-fw /bin/vbash
 ```
 
 ```bash
@@ -119,7 +119,7 @@ show firewall
 #### 内部 → 外部（ping: 許可）
 
 ```bash
-sudo docker exec -it clab-day7-firewall-host-internal ping -c 3 203.0.113.10
+docker exec -it clab-day7-firewall-host-internal ping -c 3 203.0.113.10
 ```
 
 → 成功（内部から外部への通信はすべて許可）
@@ -131,14 +131,14 @@ sudo docker exec -it clab-day7-firewall-host-internal ping -c 3 203.0.113.10
 **ターミナル1**: host-dmz で HTTP サーバーを起動
 
 ```bash
-sudo docker exec -it clab-day7-firewall-host-dmz /bin/sh
+docker exec -it clab-day7-firewall-host-dmz /bin/sh
 while true; do echo -e "HTTP/1.0 200 OK\r\n\r\nHello from DMZ" | nc -l -p 80; done
 ```
 
 **ターミナル2**: host-external から HTTP アクセス
 
 ```bash
-sudo docker exec -it clab-day7-firewall-host-external /bin/sh
+docker exec -it clab-day7-firewall-host-external /bin/sh
 nc -w 3 172.16.0.10 80
 ```
 
@@ -149,7 +149,7 @@ nc -w 3 172.16.0.10 80
 #### 外部 → 内部（ping: 拒否）
 
 ```bash
-sudo docker exec -it clab-day7-firewall-host-external ping -c 3 -W 2 192.168.1.10
+docker exec -it clab-day7-firewall-host-external ping -c 3 -W 2 192.168.1.10
 ```
 
 → 失敗（外部から内部への通信は拒否）
@@ -159,14 +159,14 @@ sudo docker exec -it clab-day7-firewall-host-external ping -c 3 -W 2 192.168.1.1
 **ターミナル1**: host-dmz でポート 22 をリッスン
 
 ```bash
-sudo docker exec -it clab-day7-firewall-host-dmz /bin/sh
+docker exec -it clab-day7-firewall-host-dmz /bin/sh
 nc -l -p 22
 ```
 
 **ターミナル2**: host-external からポート 22 に接続を試みる
 
 ```bash
-sudo docker exec -it clab-day7-firewall-host-external /bin/sh
+docker exec -it clab-day7-firewall-host-external /bin/sh
 nc -w 3 172.16.0.10 22
 ```
 
@@ -201,7 +201,7 @@ sudo containerlab deploy -t exercise.clab.yml
 ### router-fw の設定
 
 ```bash
-sudo docker exec -it clab-day7-exercise-router-fw /bin/vbash
+docker exec -it clab-day7-exercise-router-fw /bin/vbash
 configure
 
 # インターフェース設定
@@ -245,14 +245,14 @@ exit
 
 ```bash
 # 1. 内部 → 外部（許可されるはず）
-sudo docker exec clab-day7-exercise-host-internal ping -c 3 203.0.113.10
+docker exec clab-day7-exercise-host-internal ping -c 3 203.0.113.10
 
 # 2. 外部 → 内部（拒否されるはず）
-sudo docker exec clab-day7-exercise-host-external ping -c 3 -W 2 192.168.1.10
+docker exec clab-day7-exercise-host-external ping -c 3 -W 2 192.168.1.10
 
 # 3. 外部 → DMZ の TCP 80（許可されるはず）
-# ターミナル1: sudo docker exec -it clab-day7-exercise-host-dmz sh -c 'while true; do echo -e "HTTP/1.0 200 OK\r\n\r\nHello" | nc -l -p 80; done'
-# ターミナル2: sudo docker exec clab-day7-exercise-host-external sh -c 'echo "GET /" | nc -w 3 172.16.0.10 80'
+# ターミナル1: docker exec -it clab-day7-exercise-host-dmz sh -c 'while true; do echo -e "HTTP/1.0 200 OK\r\n\r\nHello" | nc -l -p 80; done'
+# ターミナル2: docker exec clab-day7-exercise-host-external sh -c 'echo "GET /" | nc -w 3 172.16.0.10 80'
 ```
 
 ---

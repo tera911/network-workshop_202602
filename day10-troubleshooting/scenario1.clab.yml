@@ -24,14 +24,14 @@ topology:
       exec:
         # host1 の IP 設定（何か問題がある...）
         - ip addr add 192.168.10.10/24 dev eth1
-        - ip route add default via 192.168.10.1
+        - ip route replace default via 192.168.10.1
 
     host2:
       kind: linux
       image: alpine:latest
       exec:
         - ip addr add 192.168.2.10/24 dev eth1
-        - ip route add default via 192.168.2.1
+        - ip route replace default via 192.168.2.1
 
   links:
     - endpoints: ["host1:eth1", "router:eth1"]

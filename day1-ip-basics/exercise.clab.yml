@@ -33,14 +33,14 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.1.10/24 dev eth1
-        - ip route add default via 192.168.1.1
+        - ip route replace default via 192.168.1.1
 
     host2:
       kind: linux
       image: alpine:latest
       exec:
         - ip addr add 192.168.2.10/24 dev eth1
-        - ip route add default via 192.168.2.1
+        - ip route replace default via 192.168.2.1
 
   links:
     - endpoints: ["host1:eth1", "router1:eth1"]

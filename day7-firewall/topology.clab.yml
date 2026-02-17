@@ -29,7 +29,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 192.168.1.10/24 dev eth1
-        - ip route add default via 192.168.1.1
+        - ip route replace default via 192.168.1.1
 
     # DMZ ゾーン（Web サーバー）
     host-dmz:
@@ -37,7 +37,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 172.16.0.10/24 dev eth1
-        - ip route add default via 172.16.0.1
+        - ip route replace default via 172.16.0.1
 
     # 外部ゾーン
     host-external:
@@ -45,7 +45,7 @@ topology:
       image: alpine:latest
       exec:
         - ip addr add 203.0.113.10/24 dev eth1
-        - ip route add default via 203.0.113.1
+        - ip route replace default via 203.0.113.1
 
   links:
     # 内部
