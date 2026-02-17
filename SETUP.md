@@ -56,8 +56,8 @@ cloud-init により以下が自動インストールされます:
 multipass exec workshop -- tail -f /var/log/cloud-init-output.log
 ```
 
-`Cloud-init completed` と表示されたら完了です（Ctrl+C で終了）。
-上記tailをしなければ、`Launched: network-workshop`と表示されたら完了です。
+`Cloud-init completed` と表示されたら完了です（Ctrl+C で終了）。  
+上記tailをしなければ、`Launched: workshop`と表示されたら完了です。
 
 ### 5. 教材を VM に転送
 
