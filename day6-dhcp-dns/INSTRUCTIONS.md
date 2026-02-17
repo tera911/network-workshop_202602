@@ -5,6 +5,7 @@
 - DHCP によるIPアドレス自動配布の仕組みを理解する
 - VyOS で DHCP サーバーを設定できるようになる
 - DNS フォワーディングの基本を理解する
+- ローカル DNS にホスト名を登録して名前解決を体験する
 - 手動設定と DHCP 自動設定の違いを体験する
 
 ---
@@ -72,6 +73,17 @@ graph TB
 
 クライアントからの DNS 問い合わせを、上位の DNS サーバーに転送する機能。
 ルーターが DNS の「中継役」になることで、クライアントはルーターの IP だけ知っていればよい。
+
+### ローカル DNS（スタティックホストマッピング）
+
+ルーターに「このホスト名はこの IP」という対応表を登録しておくことで、ラボ内で独自のホスト名を使えるようになります。
+
+```
+gateway.lab  → 192.168.1.1
+server.lab   → 192.168.1.50
+```
+
+社内ネットワークでは、外部 DNS に登録しないローカル専用のホスト名をルーターに設定するのが一般的です。
 
 ---
 
@@ -149,16 +161,57 @@ ping -c 3 192.168.1.50
 ping -c 3 192.168.1.1
 ```
 
-### Step 6: DNS フォワーディングを確認する
+### Step 6: ローカル DNS でホスト名を解決する
 
-host-pc1 から DNS 問い合わせを試みます:
+ラボ内に登録されたホスト名で通信してみましょう。
+
+host-pc1 にログイン:
 
 ```bash
 sudo docker exec -it clab-day6-dhcp-dns-host-pc1 /bin/sh
+```
+
+登録済みのホスト名を名前解決:
+
+```bash
+nslookup gateway.lab 192.168.1.1
+```
+
+出力例:
+```
+Name:      gateway.lab
+Address 1: 192.168.1.1
+```
+
+```bash
+nslookup server.lab 192.168.1.1
+```
+
+出力例:
+```
+Name:      server.lab
+Address 1: 192.168.1.50
+```
+
+→ ルーターに登録したホスト名が IP アドレスに解決された！
+
+ホスト名を使って ping:
+
+```bash
+ping -c 3 server.lab
+```
+
+→ IP アドレスを覚えていなくても、ホスト名で通信できる
+
+### Step 7: DNS フォワーディングを確認する
+
+外部の DNS 名も問い合わせてみます:
+
+```bash
 nslookup google.com 192.168.1.1
 ```
 
-→ DNS フォワーダーが応答する（実際の名前解決はラボ環境の外部接続に依存）
+→ DNS フォワーダーが上位サーバーに問い合わせて応答する（ラボ環境の外部接続に依存）
 
 ---
 
@@ -196,6 +249,10 @@ set service dns forwarding listen-address 192.168.1.1
 set service dns forwarding allow-from 192.168.1.0/24
 set service dns forwarding system
 
+# ローカル DNS ホスト登録
+set system static-host-mapping host-name gateway.lab inet 192.168.1.1
+set system static-host-mapping host-name server.lab inet 192.168.1.50
+
 commit
 save
 exit
@@ -232,9 +289,40 @@ sudo docker exec -it clab-day6-exercise-host-pc2 udhcpc -i eth1
    sudo docker exec clab-day6-exercise-host-pc1 ping -c 3 192.168.1.50
    ```
 
+4. ホスト名で名前解決できるか確認:
+   ```bash
+   sudo docker exec clab-day6-exercise-host-pc1 nslookup server.lab 192.168.1.1
+   sudo docker exec clab-day6-exercise-host-pc1 ping -c 3 server.lab
+   ```
+
 ---
 
 ## 発展課題
+
+### 自分だけのホスト名を登録してみよう
+
+好きなホスト名を追加登録してみましょう:
+
+```bash
+sudo docker exec -it clab-day6-exercise-router-gw /bin/vbash
+configure
+
+# 例: 自分のマシンに名前をつける
+set system static-host-mapping host-name mypc.lab inet 192.168.1.100
+set system static-host-mapping host-name printer.lab inet 192.168.1.200
+
+commit
+save
+exit
+```
+
+登録後、ホストから確認:
+
+```bash
+sudo docker exec clab-day6-exercise-host-pc1 nslookup mypc.lab 192.168.1.1
+```
+
+> 実際の企業ネットワークでは、Active Directory や BIND などの DNS サーバーで同様の管理をしています。
 
 ### DHCP 固定割り当て（スタティックマッピング）
 
@@ -266,7 +354,8 @@ sudo docker exec clab-day6-exercise-host-pc1 ip link show eth1
 2. **DORA** = Discover → Offer → Request → ACK の 4 ステップ
 3. **DHCP プール** = 自動割り当て用の IP 範囲
 4. **DNS フォワーディング** = DNS 問い合わせを上位サーバーに転送
-5. **手動 vs DHCP** = 固定が必要なサーバーは手動、クライアントは DHCP が一般的
+5. **スタティックホストマッピング** = ローカル DNS にホスト名と IP の対応を登録
+6. **手動 vs DHCP** = 固定が必要なサーバーは手動、クライアントは DHCP が一般的
 
 ---
 

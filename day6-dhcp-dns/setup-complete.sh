@@ -17,6 +17,8 @@ set service dhcp-server shared-network-name LAN subnet 192.168.1.0/24 lease 8640
 set service dns forwarding listen-address 192.168.1.1
 set service dns forwarding allow-from 192.168.1.0/24
 set service dns forwarding system
+set system static-host-mapping host-name gateway.lab inet 192.168.1.1
+set system static-host-mapping host-name server.lab inet 192.168.1.50
 commit
 save
 exit

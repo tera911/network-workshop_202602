@@ -165,7 +165,7 @@ runcmd:
   # VyOS / Alpine イメージを事前取得
   # 注意: VyOS公式イメージが取得できない場合は、手動でビルドが必要です
   #       詳細は docs/BUILD-VYOS.md を参照してください
-  - docker pull ghcr.io/vyos/vyos:current || echo "VyOS image not available, manual build required"
+  - docker pull ghcr.io/tera911/vyos:1.5 || echo "VyOS image not available, manual build required"
   - docker pull alpine:latest
 
   # 作業ディレクトリ作成

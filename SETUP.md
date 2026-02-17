@@ -68,20 +68,12 @@ multipass shell workshop
 macOS 側（別のターミナル）で:
 
 ```bash
-# 教材ディレクトリに移動
-cd /path/to/network-workshop-vyos
-
-# ZIP 作成
-zip -r network-workshop-vyos.zip .
-
 # VM に転送
-multipass transfer network-workshop-vyos.zip workshop:/home/ubuntu/
+multipass transfer -r . workshop:/home/ubuntu/network-workshop-vyos
 ```
 
 VM 側で:
 ```bash
-# 解凍
-unzip network-workshop-vyos.zip -d network-workshop-vyos
 cd network-workshop-vyos
 
 # ディレクトリ確認

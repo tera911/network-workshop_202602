@@ -225,6 +225,19 @@ vping host1 192.168.2.10 # host1 から ping
 | [docs/FACILITATOR-GUIDE.md](docs/FACILITATOR-GUIDE.md) | 講師向けガイド（進行・準備） |
 | [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md) | トラブルシューティング集 |
 
+### 補足リファレンス
+
+| ファイル | 内容 | 関連 Day |
+|----------|------|---------|
+| [docs/NETWORK-FUNDAMENTALS.md](docs/NETWORK-FUNDAMENTALS.md) | ネットワーク基礎（OSI/TCP-IP、IP、プロトコル） | 全 Day 共通 |
+| [docs/ROUTING-REFERENCE.md](docs/ROUTING-REFERENCE.md) | ルーティングの基礎（スタティックルート、テーブル） | Day 1, 2 |
+| [docs/VLAN-REFERENCE.md](docs/VLAN-REFERENCE.md) | VLAN（802.1Q、Inter-VLAN ルーティング） | Day 3, 8 |
+| [docs/OSPF-REFERENCE.md](docs/OSPF-REFERENCE.md) | OSPF（動的ルーティング、SPF、エリア） | Day 2, 4 |
+| [docs/NAT-REFERENCE.md](docs/NAT-REFERENCE.md) | NAT（SNAT、DNAT、Masquerade、PAT） | Day 5 |
+| [docs/DHCP-DNS-REFERENCE.md](docs/DHCP-DNS-REFERENCE.md) | DHCP / DNS（DORA、名前解決、フォワーディング） | Day 6 |
+| [docs/FIREWALL-REFERENCE.md](docs/FIREWALL-REFERENCE.md) | ファイアウォール（ステートフル、ゾーン、ルール設計） | Day 7 |
+| [docs/VPN-REFERENCE.md](docs/VPN-REFERENCE.md) | VPN（WireGuard、暗号化、トンネリング） | Day 9 |
+
 ---
 
 ## 参考リンク
