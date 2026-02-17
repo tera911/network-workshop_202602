@@ -64,22 +64,14 @@ multipass exec workshop -- tail -f /var/log/cloud-init-output.log
 macOS 側で:
 
 ```bash
-# VM に転送
 multipass transfer -r . workshop:/home/ubuntu/network-workshop
-```
-
-VM 側で:
-```bash
-cd network-workshop
-
-# ディレクトリ確認
-ls -la
 ```
 
 ### 6. VM にログイン
 
 ```bash
 multipass shell workshop
+cd network-workshop
 ```
 
 ---
