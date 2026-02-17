@@ -59,20 +59,11 @@ multipass exec workshop -- tail -f /var/log/cloud-init-output.log
 `Cloud-init completed` と表示されたら完了です（Ctrl+C で終了）。
 上記tailをしなければ、`Launched: network-workshop`と表示されたら完了です。
 
-### 5. VM にログイン
+### 5. 教材を VM に転送
+
+macOS 側で:
 
 ```bash
-multipass shell workshop
-```
-
-### 6. 教材を VM に転送
-
-macOS 側（別のターミナル）で:
-
-```bash
-# 教材ディレクトリに移動
-cd /path/to/network-workshop-vyos
-
 # VM に転送
 multipass transfer -r . workshop:/home/ubuntu/network-workshop
 ```
@@ -83,6 +74,12 @@ cd network-workshop
 
 # ディレクトリ確認
 ls -la
+```
+
+### 6. VM にログイン
+
+```bash
+multipass shell workshop
 ```
 
 ---
