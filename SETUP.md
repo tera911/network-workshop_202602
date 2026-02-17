@@ -48,7 +48,7 @@ cloud-init により以下が自動インストールされます:
 - VyOS / Alpine コンテナイメージ
 - **シェルヘルパー**（`vrouter`, `vhost` 等のショートカット）
 
-### 4. セットアップ完了を待つ
+### 4. セットアップ完了を待つ(以下のコマンドは叩かなくても良いです)
 
 ```bash
 # セットアップ状況を確認（5-10分かかります）
@@ -56,6 +56,7 @@ multipass exec workshop -- tail -f /var/log/cloud-init-output.log
 ```
 
 `Cloud-init completed` と表示されたら完了です（Ctrl+C で終了）。
+上記tailをしなければ、`Launched: network-workshop`と表示されたら完了です。
 
 ### 5. VM にログイン
 
@@ -68,13 +69,16 @@ multipass shell workshop
 macOS 側（別のターミナル）で:
 
 ```bash
+# 教材ディレクトリに移動
+cd /path/to/network-workshop-vyos
+
 # VM に転送
-multipass transfer -r . workshop:/home/ubuntu/network-workshop-vyos
+multipass transfer -r . workshop:/home/ubuntu/network-workshop
 ```
 
 VM 側で:
 ```bash
-cd network-workshop-vyos
+cd network-workshop
 
 # ディレクトリ確認
 ls -la
